@@ -1,429 +1,500 @@
+/* ========================================
+   CONFIGURAÇÕES GERAIS
+   ======================================== */
+
 * {
     box-sizing: border-box;
 }
 
-html,
-body {
+html {
+    width: 100%;
+    min-height: 100%;
     margin: 0;
     padding: 0;
-    width: 100%;
 }
 
 body {
+    width: 100%;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px 12px;
+
     background-color: #eef3f8;
-    font-family: Arial, sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #222;
+
+    -webkit-text-size-adjust: 100%;
 }
 
 
-/* ==============================
-   CAIXA PRINCIPAL
-   ============================== */
+/* ========================================
+   CARTÃO PRINCIPAL
+   ======================================== */
 
 .container {
-    width: 94%;
-    max-width: 500px;
+    width: 100%;
+    max-width: 430px;
 
-    margin: 10px auto;
+    margin: 0 auto;
+    padding: 22px 18px 16px;
 
-    background: #ffffff;
-
+    background-color: #ffffff;
     border-radius: 12px;
 
-    padding: 18px 20px;
-
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.13);
 }
 
 
-/* ==============================
-   LOGO
-   ============================== */
+/* ========================================
+   LOGO DA UNIDADE
+   ======================================== */
 
 .logo {
     display: block;
 
-    margin: 0 auto 10px auto;
-
-    width: 30%;
+    width: auto;
     max-width: 145px;
-    min-width: 100px;
-
+    max-height: 100px;
     height: auto;
+
+    margin: 0 auto 14px;
+
+    object-fit: contain;
 }
 
 
-/* ==============================
+/* ========================================
    TÍTULO
-   ============================== */
+   ======================================== */
 
 h2 {
-    text-align: center;
+    margin: 0 0 7px;
 
     color: #555;
-
     font-size: 20px;
-
-    margin: 0 0 8px 0;
+    font-weight: 700;
+    line-height: 1.3;
+    text-align: center;
 }
 
 
-/* ==============================
+/* ========================================
    DESCRIÇÃO
-   ============================== */
+   ======================================== */
 
 .descricao {
-    text-align: center;
+    margin: 0 0 17px;
 
     color: #666;
-
-    font-size: 15px;
-
-    line-height: 20px;
-
-    margin: 0 0 18px 0;
+    font-size: 14px;
+    line-height: 1.5;
+    text-align: center;
 }
 
 
-/* ==============================
-   LABELS
-   ============================== */
+/* ========================================
+   RÓTULOS DOS CAMPOS
+   ======================================== */
 
-label {
+.container > label {
     display: block;
 
-    font-weight: bold;
+    margin: 0 0 6px;
 
     color: #222;
-
-    margin-bottom: 7px;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.4;
 }
 
 
-/* ==============================
-   MATRÍCULA
-   ============================== */
+/* ========================================
+   CAMPO MATRÍCULA
+   ======================================== */
 
 #matricula {
     display: block;
 
     width: 100%;
-    height: 44px;
+    height: 40px;
 
-    padding: 10px 14px;
-
-    margin: 0 0 22px 0;
+    margin: 0 0 17px;
+    padding: 9px 12px;
 
     border: 1px solid #cfcfcf;
-
     border-radius: 8px;
 
-    background-color: #ffffff;
+    background-color: #fff;
+    color: #444;
 
-    color: #555;
-
-    font-family: Arial, sans-serif;
-
-    font-size: 16px;
+    font-family: inherit;
+    font-size: 14px;
 
     outline: none;
+
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#matricula::placeholder {
+    color: #777;
+    opacity: 1;
 }
 
 #matricula:focus {
     border-color: #0b5fa5;
+    box-shadow: 0 0 0 2px rgba(11, 95, 165, 0.12);
 }
 
 
-/* ==============================
+/* ========================================
    TIPO DE DOCUMENTO
-   ============================== */
-
-/*
-   IMPORTANTE:
-   O appearance: none remove o
-   estilo padrão do Chrome/Android.
-*/
+   ======================================== */
 
 #tipoDocumento {
     display: block;
 
     width: 100%;
-    height: 44px;
+    height: 40px;
 
-    padding: 10px 42px 10px 14px;
-
-    margin: 0 0 22px 0;
+    margin: 0 0 17px;
+    padding: 8px 34px 8px 12px;
 
     border: 1px solid #cfcfcf;
-
     border-radius: 8px;
 
-    background-color: #ffffff;
-
+    background-color: #fff;
     color: #555;
 
-    font-family: Arial, sans-serif;
-
-    font-size: 16px;
-
+    font-family: inherit;
+    font-size: 14px;
     line-height: normal;
 
-    outline: none;
-
     cursor: pointer;
+    outline: none;
 
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
-
-    /*
-       Seta criada pelo próprio CSS
-    */
 
     background-image:
         linear-gradient(45deg, transparent 50%, #555 50%),
         linear-gradient(135deg, #555 50%, transparent 50%);
 
     background-position:
-        calc(100% - 18px) 18px,
-        calc(100% - 12px) 18px;
+        calc(100% - 17px) 17px,
+        calc(100% - 12px) 17px;
 
-    background-size:
-        6px 6px,
-        6px 6px;
-
+    background-size: 5px 5px;
     background-repeat: no-repeat;
+
+    transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 #tipoDocumento:focus {
     border-color: #0b5fa5;
+    box-shadow: 0 0 0 2px rgba(11, 95, 165, 0.12);
+}
+
+#tipoDocumento:invalid {
+    color: #666;
 }
 
 
-/* ==============================
-   ASSINATURA
-   ============================== */
+/* ========================================
+   ÁREA DE ASSINATURA
+   ======================================== */
 
-canvas {
+#assinatura {
     display: block;
 
     width: 100%;
+    height: 128px;
 
-    height: 150px;
-
-    margin-top: 8px;
+    margin: 0 0 10px;
+    padding: 0;
 
     border: 2px solid #bdbdbd;
+    border-radius: 9px;
 
-    border-radius: 10px;
-
-    background-color: #ffffff;
+    background-color: #fff;
 
     touch-action: none;
+    cursor: crosshair;
 }
 
 
-/* ==============================
-   DECLARAÇÃO
-   ============================== */
+/* ========================================
+   DECLARAÇÃO DE VERACIDADE
+   ======================================== */
 
 .declaracao {
     display: flex;
 
     align-items: flex-start;
-
     gap: 8px;
 
-    margin: 12px 0;
+    width: 100%;
 
+    margin: 0 0 10px;
     padding: 9px 10px;
 
     background-color: #f5f7fa;
 
     border: 1px solid #d8e1ea;
-
     border-radius: 8px;
 
-    font-size: 13px;
-
     color: #555;
+    font-size: 12px;
 }
 
-.declaracao input {
-    width: auto;
+.declaracao input[type="checkbox"] {
+    flex: 0 0 auto;
 
-    margin-top: 3px;
+    width: 13px;
+    height: 13px;
 
-    flex-shrink: 0;
+    margin: 2px 0 0;
 
     cursor: pointer;
 }
 
 .declaracao label {
+    display: block;
+
+    flex: 1;
+    min-width: 0;
+
     margin: 0;
 
-    font-weight: normal;
-
-    line-height: 18px;
-
     color: #555;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.4;
+
+    cursor: pointer;
 }
 
 
-/* ==============================
-   MENSAGEM
-   ============================== */
+/* ========================================
+   MENSAGENS DO SISTEMA
+   ======================================== */
 
 #mensagem {
     display: none;
 
-    margin: 10px 0;
+    width: 100%;
 
+    margin: 10px 0;
     padding: 9px;
 
     border-radius: 8px;
 
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.4;
     text-align: center;
 
-    font-weight: bold;
-
-    font-size: 13px;
+    overflow-wrap: anywhere;
 }
 
-.erro {
-    display: block !important;
+#mensagem.erro {
+    display: block;
 
-    background: #ffe5e5;
-
+    background-color: #ffe5e5;
     color: #a30000;
 
     border: 1px solid #ffb5b5;
 }
 
-.sucesso {
-    display: block !important;
+#mensagem.sucesso {
+    display: block;
 
-    background: #e8f8e8;
-
+    background-color: #e8f8e8;
     color: #0b6b0b;
 
     border: 1px solid #b7e4b7;
 }
 
 
-/* ==============================
+/* ========================================
    BOTÕES
-   ============================== */
+   ======================================== */
 
 .botoes {
     display: flex;
 
     width: 100%;
+    gap: 10px;
 
-    gap: 12px;
-
-    margin-top: 12px;
+    margin-top: 10px;
 }
 
-button {
-    flex: 1;
+.botoes button {
+    flex: 1 1 0;
+    min-width: 0;
+    height: 40px;
 
-    width: 50%;
-
-    height: 46px;
-
-    padding: 12px;
+    margin: 0;
+    padding: 9px 10px;
 
     border: none;
-
-    border-radius: 8px;
+    border-radius: 7px;
 
     background-color: #0b5fa5;
+    color: #fff;
 
-    color: #ffffff;
-
-    font-family: Arial, sans-serif;
-
-    font-size: 16px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 400;
 
     cursor: pointer;
+
+    transition: background-color 0.2s, opacity 0.2s;
 }
 
-button:hover {
+.botoes button:hover {
     background-color: #084b84;
 }
 
+.botoes button:focus-visible {
+    outline: 2px solid #084b84;
+    outline-offset: 3px;
+}
 
-/* ==============================
-   TELAS PEQUENAS
-   ============================== */
+.botoes button:active {
+    opacity: 0.85;
+}
 
-@media (max-width: 600px) and (max-height: 700px) {
+.botoes button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+
+/* ========================================
+   TABLETS E TELAS MÉDIAS
+   ======================================== */
+
+@media (min-width: 601px) {
+    body {
+        padding-top: 24px;
+        padding-bottom: 24px;
+    }
+}
+
+
+/* ========================================
+   CELULARES
+   ======================================== */
+
+@media (max-width: 480px) {
+    body {
+        padding: 12px 10px;
+    }
 
     .container {
-        padding: 14px 18px;
+        padding: 18px 15px 14px;
+        border-radius: 10px;
     }
 
     .logo {
-        width: 27%;
-
-        min-width: 90px;
-
-        margin-bottom: 7px;
+        max-width: 125px;
+        max-height: 85px;
+        margin-bottom: 12px;
     }
 
     h2 {
         font-size: 19px;
-
-        margin-bottom: 6px;
     }
 
     .descricao {
-        font-size: 14px;
-
-        line-height: 18px;
-
-        margin-bottom: 14px;
+        margin-bottom: 15px;
+        font-size: 13px;
     }
 
-    #matricula {
-        height: 40px;
-
-        margin-bottom: 16px;
-    }
-
+    #matricula,
     #tipoDocumento {
-        height: 40px;
-
-        margin-bottom: 16px;
+        height: 42px;
+        margin-bottom: 15px;
+        font-size: 14px;
     }
 
-    canvas {
+    #assinatura {
         height: 125px;
     }
 
     .declaracao {
-        margin: 9px 0;
-
-        padding: 8px;
-
-        font-size: 12px;
-    }
-
-    .declaracao label {
-        line-height: 16px;
-    }
-
-    #mensagem {
-        margin: 8px 0;
-
         padding: 8px;
     }
 
     .botoes {
-        margin-top: 9px;
+        gap: 9px;
     }
 
-    button {
-        height: 43px;
+    .botoes button {
+        height: 42px;
+    }
+}
+
+
+/* ========================================
+   CELULARES COM POUCA ALTURA
+   ======================================== */
+
+@media (max-height: 650px) {
+    body {
+        padding-top: 8px;
+        padding-bottom: 8px;
+    }
+
+    .container {
+        padding-top: 13px;
+        padding-bottom: 12px;
+    }
+
+    .logo {
+        max-height: 65px;
+        margin-bottom: 8px;
+    }
+
+    h2 {
+        margin-bottom: 5px;
+        font-size: 18px;
+    }
+
+    .descricao {
+        margin-bottom: 12px;
+        font-size: 13px;
+    }
+
+    #matricula,
+    #tipoDocumento {
+        margin-bottom: 12px;
+    }
+
+    #assinatura {
+        height: 105px;
+    }
+
+    .declaracao {
+        margin-bottom: 8px;
+    }
+
+    .botoes {
+        margin-top: 8px;
+    }
+}
+
+
+/* ========================================
+   ACESSIBILIDADE: MOVIMENTO REDUZIDO
+   ======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        transition: none !important;
     }
 }
