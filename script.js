@@ -1,53 +1,39 @@
-javascript
 // ========================================
 // CONFIGURAÇÃO
 // ========================================
 
-// URL do Google Apps Script
 const URL_SCRIPT =
     "https://script.google.com/macros/s/AKfycbyGvPIuZ-91og6ti_LP22d59zF_czAuuacMEWN0fC-naPc0wsQcNc6n8oRbtYmPpD-7/exec";
 
-// Elementos do formulário
 const canvas = document.getElementById("assinatura");
 const campoMatricula = document.getElementById("matricula");
 const campoDocumento = document.getElementById("tipoDocumento");
 const campoAceite = document.getElementById("aceite");
+const mensagem = document.getElementById("mensagem");
 const botaoLimpar = document.getElementById("limpar");
 const botaoEnviar = document.getElementById("enviar");
-const mensagem = document.getElementById("mensagem");
 
-// Verificar se a biblioteca de assinatura foi carregada
+// Verificar se a biblioteca foi carregada
 if (typeof SignaturePad === "undefined") {
     mostrarMensagem(
-        "Não foi possível carregar a área de assinatura. Atualize a página.",
+        "Erro ao carregar a assinatura. Atualize a página.",
         "erro"
     );
-
-    throw new Error("Biblioteca SignaturePad não encontrada.");
+    throw new Error("SignaturePad não foi carregado.");
 }
 
-
-// ========================================
-// CONFIGURAÇÃO DA ASSINATURA
-// ========================================
-
-const assinaturaPad = new SignaturePad(canvas, {
+const signaturePad = new SignaturePad(canvas, {
     minWidth: 1,
     maxWidth: 2.5,
-    penColor: "#000000",
-    backgroundColor: "#ffffff"
+    penColor: "#000000"
 });
 
 
 // ========================================
 // AJUSTAR CANVAS
-// Preserva a assinatura ao redimensionar
 // ========================================
 
 function ajustarCanvas() {
-    // Guardar os traços existentes antes do redimensionamento
-    const dadosAnteriores = assinaturaPad.toData();
-
     const proporcao = Math.max(
         window.devicePixelRatio || 1,
         1
@@ -56,48 +42,33 @@ function ajustarCanvas() {
     const largura = canvas.offsetWidth;
     const altura = canvas.offsetHeight;
 
-    if (!largura || !altura) {
-        return;
-    }
+    if (!largura || !altura) return;
 
-    // Evitar redimensionamentos desnecessários
-    if (
-        canvas.width === Math.round(largura * proporcao) &&
-        canvas.height === Math.round(altura * proporcao)
-    ) {
-        return;
-    }
+    // Guardar a assinatura antes de redimensionar
+    const dados = signaturePad.toData();
 
     canvas.width = Math.round(largura * proporcao);
     canvas.height = Math.round(altura * proporcao);
 
     const contexto = canvas.getContext("2d");
+    contexto.setTransform(proporcao, 0, 0, proporcao, 0, 0);
 
-    contexto.setTransform(
-        proporcao,
-        0,
-        0,
-        proporcao,
-        0,
-        0
-    );
+    // Restaurar os traços
+    signaturePad.clear();
 
-    // Restaurar os traços se já existir uma assinatura
-    assinaturaPad.clear();
-
-    if (dadosAnteriores.length > 0) {
-        assinaturaPad.fromData(dadosAnteriores);
+    if (dados.length > 0) {
+        signaturePad.fromData(dados);
     }
 }
 
 window.addEventListener("resize", ajustarCanvas);
 
-// Ajustar depois que a página for carregada
-requestAnimationFrame(ajustarCanvas);
+// Inicializar após o navegador calcular o layout
+window.addEventListener("load", ajustarCanvas);
 
 
 // ========================================
-// MENSAGENS DO SISTEMA
+// MENSAGENS
 // ========================================
 
 function mostrarMensagem(texto, tipo) {
@@ -112,46 +83,38 @@ function limparMensagem() {
 
 
 // ========================================
-// LIMPAR FORMULÁRIO
+// BOTÃO LIMPAR
 // ========================================
 
-function limparFormulario() {
+botaoLimpar.addEventListener("click", () => {
+    if (botaoEnviar.disabled) return;
+
+    signaturePad.clear();
     campoMatricula.value = "";
     campoDocumento.value = "";
     campoAceite.checked = false;
 
-    assinaturaPad.clear();
-
     limparMensagem();
-}
-
-botaoLimpar.addEventListener("click", () => {
-    // Não limpar enquanto houver um envio em andamento
-    if (botaoEnviar.disabled) {
-        return;
-    }
-
-    limparFormulario();
 });
 
 
 // ========================================
-// VALIDAR FORMULÁRIO
+// BOTÃO ENVIAR
 // ========================================
 
-function validarFormulario() {
+botaoEnviar.addEventListener("click", async () => {
+    limparMensagem();
+
+    if (botaoEnviar.disabled) return;
+
     const matricula = campoMatricula.value.trim();
     const tipoDocumento = campoDocumento.value;
     const aceite = campoAceite.checked;
 
     if (!matricula) {
-        mostrarMensagem(
-            "⚠️ Informe sua matrícula.",
-            "erro"
-        );
-
+        mostrarMensagem("⚠️ Informe sua matrícula.", "erro");
         campoMatricula.focus();
-        return false;
+        return;
     }
 
     if (!tipoDocumento) {
@@ -159,18 +122,16 @@ function validarFormulario() {
             "⚠️ Selecione o tipo de documento.",
             "erro"
         );
-
         campoDocumento.focus();
-        return false;
+        return;
     }
 
-    if (assinaturaPad.isEmpty()) {
+    if (signaturePad.isEmpty()) {
         mostrarMensagem(
             "⚠️ Faça sua assinatura antes de enviar.",
             "erro"
         );
-
-        return false;
+        return;
     }
 
     if (!aceite) {
@@ -178,72 +139,33 @@ function validarFormulario() {
             "⚠️ Confirme a declaração antes de enviar.",
             "erro"
         );
-
         campoAceite.focus();
-        return false;
-    }
-
-    return true;
-}
-
-
-// ========================================
-// ENVIAR ASSINATURA
-// ========================================
-
-botaoEnviar.addEventListener("click", async () => {
-    limparMensagem();
-
-    // Impedir envio duplicado
-    if (botaoEnviar.disabled) {
         return;
     }
 
-    // Validar os campos
-    if (!validarFormulario()) {
-        return;
-    }
-
-    // Preparar os dados
     const dados = {
-        matricula: campoMatricula.value.trim(),
-        tipoDocumento: campoDocumento.value,
-        assinatura: assinaturaPad.toDataURL("image/png")
+        matricula: matricula,
+        tipoDocumento: tipoDocumento,
+        assinatura: signaturePad.toDataURL("image/png")
     };
 
-    // Bloquear os botões durante o envio
+    const textoOriginal = botaoEnviar.textContent;
+
     botaoEnviar.disabled = true;
     botaoLimpar.disabled = true;
-
-    const textoOriginal = botaoEnviar.textContent;
     botaoEnviar.textContent = "Enviando...";
 
     try {
         const resposta = await fetch(URL_SCRIPT, {
             method: "POST",
-
-            // Mantém o envio JSON sem solicitar
-            // cabeçalhos adicionais que provoquem preflight.
             body: JSON.stringify(dados)
         });
 
         if (!resposta.ok) {
-            throw new Error(
-                `O servidor respondeu com HTTP ${resposta.status}.`
-            );
+            throw new Error("Erro HTTP: " + resposta.status);
         }
 
-        const textoResposta = await resposta.text();
-
-        let resultado;
-
-        try {
-            resultado = JSON.parse(textoResposta);
-        } catch {
-            throw new Error(
-                "O servidor não retornou uma resposta JSON válida."
-            );
-        }
+        const resultado = await resposta.json();
 
         if (resultado.status === "ok") {
             mostrarMensagem(
@@ -251,42 +173,29 @@ botaoEnviar.addEventListener("click", async () => {
                 "sucesso"
             );
 
-            // Limpar somente após confirmação do servidor
             campoMatricula.value = "";
             campoDocumento.value = "";
             campoAceite.checked = false;
-            assinaturaPad.clear();
+            signaturePad.clear();
 
         } else {
-            const detalhe =
-                typeof resultado.message === "string"
-                    ? resultado.message
-                    : "";
-
             mostrarMensagem(
-                detalhe
-                    ? `❌ Não foi possível salvar: ${detalhe}`
-                    : "❌ O servidor não confirmou o salvamento da assinatura.",
+                "❌ O servidor não confirmou o salvamento.",
                 "erro"
             );
         }
 
     } catch (erro) {
-        console.error(
-            "Erro ao enviar assinatura:",
-            erro
-        );
+        console.error("Erro no envio:", erro);
 
         mostrarMensagem(
-            "❌ Não foi possível confirmar o envio. Verifique sua conexão antes de tentar novamente.",
+            "❌ Erro ao enviar. Verifique a conexão e o servidor.",
             "erro"
         );
 
     } finally {
-        // Liberar os botões
         botaoEnviar.disabled = false;
         botaoLimpar.disabled = false;
-
         botaoEnviar.textContent = textoOriginal;
     }
 });
