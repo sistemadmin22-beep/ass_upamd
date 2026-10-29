@@ -2,24 +2,47 @@
 // CONFIGURAÇÃO
 // ========================================
 
+// URL do Google Apps Script
 const URL_SCRIPT =
     "https://script.google.com/macros/s/AKfycbyGvPIuZ-91og6ti_LP22d59zF_czAuuacMEWN0fC-naPc0wsQcNc6n8oRbtYmPpD-7/exec";
 
+// Elementos do formulário
 const canvas = document.getElementById("assinatura");
 const campoMatricula = document.getElementById("matricula");
 const campoDocumento = document.getElementById("tipoDocumento");
 const campoAceite = document.getElementById("aceite");
+
 const mensagem = document.getElementById("mensagem");
 const botaoLimpar = document.getElementById("limpar");
 const botaoEnviar = document.getElementById("enviar");
 
-// Verificar se a biblioteca foi carregada
+
+// ========================================
+// MENSAGENS
+// ========================================
+
+function mostrarMensagem(texto, tipo) {
+    mensagem.textContent = texto;
+    mensagem.className = tipo;
+}
+
+function limparMensagem() {
+    mensagem.textContent = "";
+    mensagem.className = "";
+}
+
+
+// ========================================
+// INICIALIZAÇÃO DA ASSINATURA
+// ========================================
+
 if (typeof SignaturePad === "undefined") {
     mostrarMensagem(
-        "Erro ao carregar a assinatura. Atualize a página.",
+        "Não foi possível carregar a assinatura. Atualize a página.",
         "erro"
     );
-    throw new Error("SignaturePad não foi carregado.");
+
+    throw new Error("Biblioteca SignaturePad não encontrada.");
 }
 
 const signaturePad = new SignaturePad(canvas, {
@@ -42,7 +65,9 @@ function ajustarCanvas() {
     const largura = canvas.offsetWidth;
     const altura = canvas.offsetHeight;
 
-    if (!largura || !altura) return;
+    if (!largura || !altura) {
+        return;
+    }
 
     // Guardar a assinatura antes de redimensionar
     const dados = signaturePad.toData();
@@ -51,9 +76,17 @@ function ajustarCanvas() {
     canvas.height = Math.round(altura * proporcao);
 
     const contexto = canvas.getContext("2d");
-    contexto.setTransform(proporcao, 0, 0, proporcao, 0, 0);
 
-    // Restaurar os traços
+    contexto.setTransform(
+        proporcao,
+        0,
+        0,
+        proporcao,
+        0,
+        0
+    );
+
+    // Restaurar os traços existentes
     signaturePad.clear();
 
     if (dados.length > 0) {
@@ -61,25 +94,14 @@ function ajustarCanvas() {
     }
 }
 
+// Ajustar quando a janela mudar de tamanho
 window.addEventListener("resize", ajustarCanvas);
 
 // Inicializar após o navegador calcular o layout
 window.addEventListener("load", ajustarCanvas);
 
-
-// ========================================
-// MENSAGENS
-// ========================================
-
-function mostrarMensagem(texto, tipo) {
-    mensagem.textContent = texto;
-    mensagem.className = tipo;
-}
-
-function limparMensagem() {
-    mensagem.textContent = "";
-    mensagem.className = "";
-}
+// Ajuste inicial
+requestAnimationFrame(ajustarCanvas);
 
 
 // ========================================
@@ -87,9 +109,12 @@ function limparMensagem() {
 // ========================================
 
 botaoLimpar.addEventListener("click", () => {
-    if (botaoEnviar.disabled) return;
+    if (botaoEnviar.disabled) {
+        return;
+    }
 
     signaturePad.clear();
+
     campoMatricula.value = "";
     campoDocumento.value = "";
     campoAceite.checked = false;
@@ -105,44 +130,59 @@ botaoLimpar.addEventListener("click", () => {
 botaoEnviar.addEventListener("click", async () => {
     limparMensagem();
 
-    if (botaoEnviar.disabled) return;
+    // Evitar envios repetidos
+    if (botaoEnviar.disabled) {
+        return;
+    }
 
     const matricula = campoMatricula.value.trim();
     const tipoDocumento = campoDocumento.value;
     const aceite = campoAceite.checked;
 
-    if (!matricula) {
-        mostrarMensagem("⚠️ Informe sua matrícula.", "erro");
+    // Validar matrícula
+    if (matricula === "") {
+        mostrarMensagem(
+            "⚠️ Informe sua matrícula.",
+            "erro"
+        );
+
         campoMatricula.focus();
         return;
     }
 
-    if (!tipoDocumento) {
+    // Validar documento
+    if (tipoDocumento === "") {
         mostrarMensagem(
             "⚠️ Selecione o tipo de documento.",
             "erro"
         );
+
         campoDocumento.focus();
         return;
     }
 
+    // Validar assinatura
     if (signaturePad.isEmpty()) {
         mostrarMensagem(
             "⚠️ Faça sua assinatura antes de enviar.",
             "erro"
         );
+
         return;
     }
 
+    // Validar declaração
     if (!aceite) {
         mostrarMensagem(
             "⚠️ Confirme a declaração antes de enviar.",
             "erro"
         );
+
         campoAceite.focus();
         return;
     }
 
+    // Preparar os dados
     const dados = {
         matricula: matricula,
         tipoDocumento: tipoDocumento,
@@ -151,8 +191,10 @@ botaoEnviar.addEventListener("click", async () => {
 
     const textoOriginal = botaoEnviar.textContent;
 
+    // Bloquear botões durante o envio
     botaoEnviar.disabled = true;
     botaoLimpar.disabled = true;
+
     botaoEnviar.textContent = "Enviando...";
 
     try {
@@ -162,7 +204,9 @@ botaoEnviar.addEventListener("click", async () => {
         });
 
         if (!resposta.ok) {
-            throw new Error("Erro HTTP: " + resposta.status);
+            throw new Error(
+                "Erro HTTP: " + resposta.status
+            );
         }
 
         const resultado = await resposta.json();
@@ -173,9 +217,11 @@ botaoEnviar.addEventListener("click", async () => {
                 "sucesso"
             );
 
+            // Limpar após confirmação de sucesso
             campoMatricula.value = "";
             campoDocumento.value = "";
             campoAceite.checked = false;
+
             signaturePad.clear();
 
         } else {
@@ -186,7 +232,10 @@ botaoEnviar.addEventListener("click", async () => {
         }
 
     } catch (erro) {
-        console.error("Erro no envio:", erro);
+        console.error(
+            "Erro ao enviar assinatura:",
+            erro
+        );
 
         mostrarMensagem(
             "❌ Erro ao enviar. Verifique a conexão e o servidor.",
@@ -194,8 +243,10 @@ botaoEnviar.addEventListener("click", async () => {
         );
 
     } finally {
+        // Liberar os botões
         botaoEnviar.disabled = false;
         botaoLimpar.disabled = false;
+
         botaoEnviar.textContent = textoOriginal;
     }
 });
