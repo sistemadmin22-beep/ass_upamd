@@ -1,4 +1,4 @@
-```css
+
 /* =====================================
    CONFIGURAÇÃO GERAL
    ===================================== */
@@ -17,6 +17,7 @@ body {
 
 body {
     min-height: 100vh;
+    min-height: 100dvh;
 
     display: flex;
     justify-content: center;
@@ -224,6 +225,7 @@ h2 {
     height: 155px;
 
     margin: 0 0 10px;
+    padding: 0;
 
     border: 2px solid #bdbdbd;
 
@@ -232,6 +234,8 @@ h2 {
     background-color: #ffffff;
 
     touch-action: none;
+
+    cursor: crosshair;
 }
 
 
@@ -314,9 +318,13 @@ h2 {
     font-weight: bold;
 }
 
-.erro {
-    display: block !important;
+#mensagem.erro,
+#mensagem.sucesso,
+#mensagem.normal {
+    display: block;
+}
 
+#mensagem.erro {
     background-color: #ffe5e5;
 
     color: #a30000;
@@ -324,14 +332,20 @@ h2 {
     border: 1px solid #ffb5b5;
 }
 
-.sucesso {
-    display: block !important;
-
+#mensagem.sucesso {
     background-color: #e8f8e8;
 
     color: #0b6b0b;
 
     border: 1px solid #b7e4b7;
+}
+
+#mensagem.normal {
+    background-color: #edf5fc;
+
+    color: #1264a3;
+
+    border: 1px solid #c8dced;
 }
 
 
@@ -382,6 +396,11 @@ h2 {
     transform: scale(0.98);
 }
 
+.botoes button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
 
 /* =====================================
    RODAPÉ
@@ -414,6 +433,7 @@ h2 {
 
     body {
         padding: 12px;
+        align-items: flex-start;
     }
 
     .container {
@@ -457,7 +477,6 @@ h2 {
         margin-bottom: 13px;
     }
 
-    /* Mantém a área de assinatura em 155px. */
     #assinatura {
         height: 155px;
     }
@@ -471,4 +490,3 @@ h2 {
     }
 
 }
-```
