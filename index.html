@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -9,32 +10,41 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Assinatura Digital - UPA Madureira</title>
+    <title>Assinatura RH</title>
 
-    <!-- Folha de estilos -->
-    <link rel="stylesheet" href="estilo.css">
+    <link rel="stylesheet" href="style.css">
+
 </head>
 
 <body>
 
     <div class="container">
 
-        <!-- LOGO DA UNIDADE -->
+        <!-- LOGO -->
+
         <img
             src="logo.png"
-            alt="Logo UPA Madureira"
+            alt="Logo UPA Del Castilho"
             class="logo"
         >
 
+
         <!-- TÍTULO -->
-        <h2>Assinatura Digital</h2>
+
+        <h2>
+            Assinatura Digital
+        </h2>
+
 
         <!-- DESCRIÇÃO -->
+
         <p class="descricao">
             Assine para validar as informações enviadas
         </p>
 
+
         <!-- MATRÍCULA -->
+
         <label for="matricula">
             Matrícula
         </label>
@@ -46,7 +56,9 @@
             autocomplete="off"
         >
 
+
         <!-- TIPO DE DOCUMENTO -->
+
         <label for="tipoDocumento">
             Tipo de Documento
         </label>
@@ -55,6 +67,7 @@
             id="tipoDocumento"
             required
         >
+
             <option
                 value=""
                 selected
@@ -70,16 +83,21 @@
             <option value="Solicitação de Transporte">
                 Solicitação de Transporte
             </option>
+
         </select>
 
-        <!-- ASSINATURA DIGITAL -->
+
+        <!-- ASSINATURA -->
+
         <label for="assinatura">
             Assine abaixo
         </label>
 
         <canvas id="assinatura"></canvas>
 
-        <!-- DECLARAÇÃO DE VERACIDADE -->
+
+        <!-- DECLARAÇÃO -->
+
         <div class="declaracao">
 
             <input
@@ -88,16 +106,19 @@
             >
 
             <label for="aceite">
-                Declaro que esta assinatura é de minha autoria
-                e que as informações enviadas são verdadeiras.
+                Declaro que esta assinatura é de minha autoria e que as informações enviadas são verdadeiras.
             </label>
 
         </div>
 
-        <!-- MENSAGENS DO SISTEMA -->
+
+        <!-- MENSAGEM -->
+
         <div id="mensagem"></div>
 
+
         <!-- BOTÕES -->
+
         <div class="botoes">
 
             <button
@@ -118,10 +139,14 @@
 
     </div>
 
+
     <!-- BIBLIOTECA DE ASSINATURA -->
+
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
 
+
     <!-- JAVASCRIPT DO SISTEMA -->
+
     <script src="script.js"></script>
 
 </body>
