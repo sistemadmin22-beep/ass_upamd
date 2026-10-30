@@ -6,7 +6,7 @@
 
 
 /***************************************************************
- * 1. ENDEREÇO DA NOVA IMPLANTAÇÃO DO APPS SCRIPT
+ * 1. ENDEREÇO DA IMPLANTAÇÃO DO APPS SCRIPT
  ***************************************************************/
 
 const URL_SCRIPT =
@@ -32,16 +32,12 @@ const TAMANHO_MAXIMO_BYTES = 5 * 1024 * 1024;
 document.addEventListener("DOMContentLoaded", function () {
 
   const campoMatricula = document.getElementById("matricula");
-
   const campoDocumento = document.getElementById("tipoDocumento");
-
   const canvas = document.getElementById("assinatura");
-
   const aceite = document.getElementById("aceite");
-
   const botaoLimpar = document.getElementById("limpar");
-
   const botaoEnviar = document.getElementById("enviar");
+  const campoMensagem = document.getElementById("mensagem");
 
 
   /*************************************************************
@@ -61,12 +57,9 @@ document.addEventListener("DOMContentLoaded", function () {
       "Um ou mais elementos do formulário não foram encontrados."
     );
 
-    alert(
-      "Erro ao carregar o formulário. Atualize a página."
-    );
+    alert("Erro ao carregar o formulário. Atualize a página.");
 
     return;
-
   }
 
 
@@ -84,7 +77,6 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
     return;
-
   }
 
 
@@ -93,13 +85,9 @@ document.addEventListener("DOMContentLoaded", function () {
    *************************************************************/
 
   const assinaturaPad = new SignaturePad(canvas, {
-
     minWidth: 1,
-
     maxWidth: 2.5,
-
     penColor: "black"
-
   });
 
 
@@ -115,25 +103,16 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
     const largura = canvas.offsetWidth;
-
     const altura = canvas.offsetHeight;
 
     if (!largura || !altura) return;
-
-
-    // Preservar assinatura existente.
 
     const imagemAnterior = assinaturaPad.isEmpty()
       ? null
       : assinaturaPad.toData();
 
-
-    // Ajustar resolução do canvas.
-
     canvas.width = largura * proporcao;
-
     canvas.height = altura * proporcao;
-
 
     const contexto = canvas.getContext("2d");
 
@@ -146,30 +125,42 @@ document.addEventListener("DOMContentLoaded", function () {
       0
     );
 
-
-    // Restaurar assinatura.
-
     assinaturaPad.clear();
 
     if (imagemAnterior) {
-
       assinaturaPad.fromData(imagemAnterior);
-
     }
-
   }
 
 
   ajustarCanvas();
 
-  window.addEventListener(
-    "resize",
-    ajustarCanvas
-  );
+  window.addEventListener("resize", ajustarCanvas);
 
 
   /*************************************************************
-   * 8. BOTÃO LIMPAR
+   * 8. FUNÇÃO PARA MOSTRAR MENSAGENS
+   *************************************************************/
+
+  function mostrarMensagem(texto, tipo) {
+
+    if (campoMensagem) {
+
+      campoMensagem.textContent = texto;
+
+      campoMensagem.style.color =
+        tipo === "erro" ? "#b00020" : "#176b35";
+
+    } else {
+
+      alert(texto);
+
+    }
+  }
+
+
+  /*************************************************************
+   * 9. BOTÃO LIMPAR
    *************************************************************/
 
   botaoLimpar.addEventListener("click", function (evento) {
@@ -178,97 +169,98 @@ document.addEventListener("DOMContentLoaded", function () {
 
     assinaturaPad.clear();
 
+    if (campoMensagem) {
+      campoMensagem.textContent = "";
+    }
   });
 
 
   /*************************************************************
-   * 9. BOTÃO ENVIAR
+   * 10. BOTÃO ENVIAR
    *************************************************************/
 
   botaoEnviar.addEventListener("click", async function (evento) {
 
     evento.preventDefault();
 
-
-    // Impedir dois envios simultâneos.
-
     if (botaoEnviar.disabled) return;
 
 
     /***********************************************************
-     * 10. VALIDAR MATRÍCULA
+     * 11. VALIDAR MATRÍCULA
      ***********************************************************/
 
     const matricula = campoMatricula.value.trim();
 
     if (!matricula) {
 
-      alert("Informe sua matrícula.");
+      mostrarMensagem("Informe sua matrícula.", "erro");
 
       campoMatricula.focus();
 
       return;
-
     }
 
 
     /***********************************************************
-     * 11. VALIDAR DOCUMENTO
+     * 12. VALIDAR DOCUMENTO
      ***********************************************************/
 
     const tipoDocumento = campoDocumento.value.trim();
 
     if (!tipoDocumento) {
 
-      alert("Selecione o tipo de documento.");
+      mostrarMensagem("Selecione o tipo de documento.", "erro");
 
       campoDocumento.focus();
 
       return;
-
     }
 
     if (!DOCUMENTOS_PERMITIDOS.includes(tipoDocumento)) {
 
-      alert("Tipo de documento inválido.");
+      mostrarMensagem("Tipo de documento inválido.", "erro");
 
       campoDocumento.focus();
 
       return;
-
     }
 
 
     /***********************************************************
-     * 12. VALIDAR ASSINATURA
+     * 13. VALIDAR ASSINATURA
      ***********************************************************/
 
     if (assinaturaPad.isEmpty()) {
 
-      alert("Faça sua assinatura antes de enviar.");
+      mostrarMensagem(
+        "Faça sua assinatura antes de enviar.",
+        "erro"
+      );
 
       return;
-
     }
 
 
     /***********************************************************
-     * 13. VALIDAR ACEITE
+     * 14. VALIDAR ACEITE
      ***********************************************************/
 
     if (!aceite.checked) {
 
-      alert("É necessário confirmar o aceite.");
+      mostrarMensagem(
+        "É necessário confirmar o aceite.",
+        "erro"
+      );
 
       aceite.focus();
 
       return;
-
     }
 
 
     /***********************************************************
-     * 14. GERAR IMAGEM PNG
+     * 15. GERAR IMAGEM PNG
      ***********************************************************/
 
     let imagemAssinatura;
@@ -284,17 +276,17 @@ document.addEventListener("DOMContentLoaded", function () {
         erro
       );
 
-      alert(
-        "Não foi possível preparar a assinatura. Tente novamente."
+      mostrarMensagem(
+        "Não foi possível preparar a assinatura. Tente novamente.",
+        "erro"
       );
 
       return;
-
     }
 
 
     /***********************************************************
-     * 15. VERIFICAR TAMANHO DA IMAGEM
+     * 16. VERIFICAR TAMANHO DA IMAGEM
      ***********************************************************/
 
     const prefixo = "data:image/png;base64,";
@@ -305,35 +297,33 @@ document.addEventListener("DOMContentLoaded", function () {
       base64.length * 3 / 4
     );
 
-    if (tamanhoImagem > TAMANHO_MAXIMO_BYTES) {
+    if (
+      !imagemAssinatura.startsWith(prefixo) ||
+      tamanhoImagem > TAMANHO_MAXIMO_BYTES
+    ) {
 
-      alert(
-        "A imagem da assinatura ultrapassou o limite de 5 MB. " +
-        "Tente fazer uma assinatura mais simples."
+      mostrarMensagem(
+        "A imagem da assinatura é inválida ou ultrapassou o limite de 5 MB.",
+        "erro"
       );
 
       return;
-
     }
 
 
     /***********************************************************
-     * 16. PREPARAR DADOS PARA O APPS SCRIPT
+     * 17. PREPARAR DADOS
      ***********************************************************/
 
     const dados = {
-
       matricula: matricula,
-
       tipoDocumento: tipoDocumento,
-
       assinatura: imagemAssinatura
-
     };
 
 
     /***********************************************************
-     * 17. BLOQUEAR BOTÃO DURANTE O ENVIO
+     * 18. BLOQUEAR BOTÃO DURANTE O ENVIO
      ***********************************************************/
 
     const textoOriginal = botaoEnviar.textContent;
@@ -342,35 +332,28 @@ document.addEventListener("DOMContentLoaded", function () {
 
     botaoEnviar.textContent = "Enviando...";
 
+    mostrarMensagem(
+      "Encaminhando assinatura...",
+      "normal"
+    );
+
 
     /***********************************************************
-     * 18. ENVIAR PARA O GOOGLE APPS SCRIPT
+     * 19. ENVIAR AO GOOGLE APPS SCRIPT
      ***********************************************************/
 
     try {
 
-      /*
-       * O formulário está hospedado no GitHub Pages.
-       * O Apps Script está em outro domínio.
-       *
-       * O modo no-cors permite enviar a requisição sem
-       * disponibilizar a resposta ao JavaScript do navegador.
-       *
-       * IMPORTANTE:
-       * Uma resposta opaca não confirma que o Apps Script
-       * gravou a assinatura na planilha ou no Drive.
-       */
-
-      await fetch(URL_SCRIPT, {
+      const resposta = await fetch(URL_SCRIPT, {
 
         method: "POST",
 
         mode: "no-cors",
 
+        redirect: "manual",
+
         headers: {
-
           "Content-Type": "text/plain;charset=UTF-8"
-
         },
 
         body: JSON.stringify(dados)
@@ -379,19 +362,33 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
       /*********************************************************
-       * 19. AVISO APÓS A SOLICITAÇÃO
+       * 20. TRATAR RESPOSTA OPACA
        *********************************************************/
 
-      alert(
+      /*
+       * O modo no-cors não permite ler o conteúdo da resposta.
+       * Uma resposta opaca ou opaqueredirect não confirma
+       * a gravação no Google Sheets ou no Drive.
+       *
+       * O registro deve ser confirmado na planilha.
+       */
 
-        "Sua solicitação de assinatura foi enviada! " +
-        "Aguarde a confirmação do registro antes de realizar outro envio."
-);
+      console.log(
+        "Solicitação encaminhada ao Apps Script.",
+        "Tipo de resposta:",
+        resposta.type
+      );
+
+      mostrarMensagem(
+        "Solicitação encaminhada. Verifique o registro na planilha antes de realizar outro envio.",
+        "normal"
+      );
+
 
     } catch (erro) {
 
       /*********************************************************
-       * 20. TRATAR FALHA DE COMUNICAÇÃO
+       * 21. TRATAR FALHA DE COMUNICAÇÃO
        *********************************************************/
 
       console.error(
@@ -399,19 +396,17 @@ document.addEventListener("DOMContentLoaded", function () {
         erro
       );
 
-      alert(
-
-        "Não foi possível encaminhar a assinatura.\n\n" +
-
-        "Verifique sua conexão com a internet e tente novamente."
-
+      mostrarMensagem(
+        "Não foi possível encaminhar a assinatura. " +
+        "Verifique sua conexão e tente novamente.",
+        "erro"
       );
 
 
     } finally {
 
       /*********************************************************
-       * 21. RESTAURAR BOTÃO
+       * 22. RESTAURAR BOTÃO
        *********************************************************/
 
       botaoEnviar.disabled = false;
