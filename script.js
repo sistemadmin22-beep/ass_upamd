@@ -1,4 +1,4 @@
-
+```javascript
 /***************************************************************
  * SISTEMA DE ASSINATURAS DIGITAIS - UPA MADUREIRA
  * Arquivo: script.js
@@ -18,6 +18,9 @@ const DOCUMENTOS_PERMITIDOS = [
 ];
 
 const TAMANHO_MAXIMO_BYTES = 5 * 1024 * 1024;
+
+// Altura visual do campo de assinatura.
+const ALTURA_CANVAS = 155;
 
 
 // =============================================================
@@ -66,8 +69,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
   // ===========================================================
-  // 5. CONFIGURAR ASSINATURA
+  // 5. CONFIGURAR ALTURA E ASSINATURA
   // ===========================================================
+
+  // Garante que o campo tenha 155px de altura.
+  canvas.style.height = ALTURA_CANVAS + "px";
 
   const assinaturaPad = new SignaturePad(canvas, {
     minWidth: 1,
@@ -77,34 +83,42 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
   // ===========================================================
-  // 6. AJUSTAR CANVAS
+  // 6. AJUSTAR RESOLUÇÃO INTERNA DO CANVAS
   // ===========================================================
 
   function ajustarCanvas() {
-
-    const ratio = Math.max(
-      window.devicePixelRatio || 1,
-      1
-    );
 
     const largura = canvas.offsetWidth;
     const altura = canvas.offsetHeight;
 
     if (!largura || !altura) return;
 
-    // Preservar o desenho durante o redimensionamento.
+    const ratio = Math.max(
+      window.devicePixelRatio || 1,
+      1
+    );
 
+    // Guardar assinatura existente antes do redimensionamento.
     const dadosAnteriores = assinaturaPad.isEmpty()
       ? null
       : assinaturaPad.toData();
 
-    canvas.width = largura * ratio;
-    canvas.height = altura * ratio;
+    // Ajustar resolução interna conforme a tela.
+    canvas.width = Math.round(largura * ratio);
+    canvas.height = Math.round(altura * ratio);
 
     const contexto = canvas.getContext("2d");
 
-    contexto.setTransform(ratio, 0, 0, ratio, 0, 0);
+    contexto.setTransform(
+      ratio,
+      0,
+      0,
+      ratio,
+      0,
+      0
+    );
 
+    // Restaurar os dados da assinatura.
     assinaturaPad.clear();
 
     if (dadosAnteriores) {
@@ -112,9 +126,14 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  ajustarCanvas();
 
-  window.addEventListener("resize", ajustarCanvas);
+  // Ajustar depois que o navegador calcular o layout.
+  requestAnimationFrame(ajustarCanvas);
+
+  // Ajustar novamente em mudanças de tamanho e orientação.
+  window.addEventListener("resize", function () {
+    requestAnimationFrame(ajustarCanvas);
+  });
 
 
   // ===========================================================
@@ -145,6 +164,7 @@ document.addEventListener("DOMContentLoaded", function () {
     campoMatricula.value = "";
     campoDocumento.value = "";
     aceite.checked = false;
+
     assinaturaPad.clear();
 
   }
@@ -353,8 +373,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         method: "POST",
 
-        // Mantemos o mesmo padrão utilizado no Del Castilho.
-        // Não definir no-cors nem redirect: manual.
         body: JSON.stringify(dados)
 
       });
@@ -440,3 +458,4 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
 });
+```
