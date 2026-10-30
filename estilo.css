@@ -1,4 +1,4 @@
-
+```css
 /* =====================================
    CONFIGURAÇÃO GERAL
    ===================================== */
@@ -221,7 +221,7 @@ h2 {
     display: block;
 
     width: 100%;
-    height: 128px;
+    height: 155px;
 
     margin: 0 0 10px;
 
@@ -384,6 +384,29 @@ h2 {
 
 
 /* =====================================
+   RODAPÉ
+   ===================================== */
+
+.rodape {
+    margin-top: 18px;
+
+    padding-top: 10px;
+
+    border-top: 1px solid #edf0f3;
+
+    text-align: center;
+
+    font-size: 10px;
+
+    color: #a0a8b0;
+
+    letter-spacing: 0.2px;
+
+    font-weight: normal;
+}
+
+
+/* =====================================
    TELAS PEQUENAS
    ===================================== */
 
@@ -434,8 +457,9 @@ h2 {
         margin-bottom: 13px;
     }
 
+    /* Mantém a área de assinatura em 155px. */
     #assinatura {
-        height: 115px;
+        height: 155px;
     }
 
     .declaracao {
@@ -447,3 +471,4 @@ h2 {
     }
 
 }
+```
