@@ -1,4 +1,4 @@
-```javascript
+
 /***************************************************************
  * SISTEMA DE ASSINATURAS DIGITAIS - UPA MADUREIRA
  * Arquivo: script.js
@@ -6,7 +6,7 @@
 
 
 // =============================================================
-// 1. CONFIGURAÇÃO
+// 1. CONFIGURAÇÕES
 // =============================================================
 
 const URL_SCRIPT =
@@ -19,15 +19,14 @@ const DOCUMENTOS_PERMITIDOS = [
 
 const TAMANHO_MAXIMO_BYTES = 5 * 1024 * 1024;
 
-// Altura visual do campo de assinatura.
-const ALTURA_CANVAS = 155;
-
 
 // =============================================================
-// 2. INICIALIZAÇÃO
+// 2. INICIALIZAÇÃO SEGURA
 // =============================================================
 
-document.addEventListener("DOMContentLoaded", function () {
+function iniciarFormulario() {
+
+  console.log("Iniciando formulário de assinatura...");
 
   const campoMatricula = document.getElementById("matricula");
   const campoDocumento = document.getElementById("tipoDocumento");
@@ -39,7 +38,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
   // ===========================================================
-  // 3. VERIFICAR ELEMENTOS
+  // 3. VERIFICAR ELEMENTOS DO HTML
   // ===========================================================
 
   if (
@@ -51,64 +50,91 @@ document.addEventListener("DOMContentLoaded", function () {
     !botaoEnviar ||
     !campoMensagem
   ) {
-    console.error("Elementos do formulário não encontrados.");
-    alert("Erro ao carregar o formulário. Atualize a página.");
+
+    console.error(
+      "Erro: um ou mais elementos do formulário não foram encontrados."
+    );
+
+    alert(
+      "Erro ao carregar o formulário. Atualize a página."
+    );
+
     return;
   }
 
 
   // ===========================================================
-  // 4. VERIFICAR SIGNATURE PAD
+  // 4. VERIFICAR BIBLIOTECA SIGNATURE PAD
   // ===========================================================
 
   if (typeof SignaturePad === "undefined") {
-    console.error("Biblioteca SignaturePad não carregada.");
-    alert("Não foi possível carregar o campo de assinatura.");
+
+    console.error(
+      "Erro: a biblioteca SignaturePad não foi carregada."
+    );
+
+    alert(
+      "Não foi possível carregar a ferramenta de assinatura. Atualize a página."
+    );
+
     return;
   }
 
 
   // ===========================================================
-  // 5. CONFIGURAR ALTURA E ASSINATURA
+  // 5. CONFIGURAR CANVAS
   // ===========================================================
 
-  // Garante que o campo tenha 155px de altura.
-  canvas.style.height = ALTURA_CANVAS + "px";
+  // A altura visual é controlada exclusivamente pelo CSS.
+  // O JavaScript ajusta apenas a resolução interna do canvas.
+
+  canvas.style.touchAction = "none";
 
   const assinaturaPad = new SignaturePad(canvas, {
+
     minWidth: 1,
     maxWidth: 2.5,
     penColor: "#000000"
+
   });
 
 
   // ===========================================================
-  // 6. AJUSTAR RESOLUÇÃO INTERNA DO CANVAS
+  // 6. AJUSTAR RESOLUÇÃO DO CANVAS
   // ===========================================================
 
   function ajustarCanvas() {
 
-    const largura = canvas.offsetWidth;
-    const altura = canvas.offsetHeight;
+    const largura = canvas.getBoundingClientRect().width;
+    const altura = canvas.getBoundingClientRect().height;
 
-    if (!largura || !altura) return;
+    if (largura <= 0 || altura <= 0) {
+      console.warn("Canvas ainda não possui dimensões válidas.");
+      return;
+    }
 
     const ratio = Math.max(
       window.devicePixelRatio || 1,
       1
     );
 
-    // Guardar assinatura existente antes do redimensionamento.
+    // Preservar assinatura existente.
     const dadosAnteriores = assinaturaPad.isEmpty()
       ? null
       : assinaturaPad.toData();
 
-    // Ajustar resolução interna conforme a tela.
+    // Ajustar resolução interna.
     canvas.width = Math.round(largura * ratio);
     canvas.height = Math.round(altura * ratio);
 
     const contexto = canvas.getContext("2d");
 
+    if (!contexto) {
+      console.error("Não foi possível acessar o contexto do canvas.");
+      return;
+    }
+
+    // Ajustar escala para telas de alta resolução.
     contexto.setTransform(
       ratio,
       0,
@@ -118,26 +144,40 @@ document.addEventListener("DOMContentLoaded", function () {
       0
     );
 
-    // Restaurar os dados da assinatura.
+    // Limpar e restaurar os dados anteriores.
     assinaturaPad.clear();
 
-    if (dadosAnteriores) {
+    if (dadosAnteriores && dadosAnteriores.length > 0) {
       assinaturaPad.fromData(dadosAnteriores);
     }
+
+    console.log("Canvas ajustado:", {
+      largura: largura,
+      altura: altura,
+      resolucao: ratio
+    });
+
   }
 
 
-  // Ajustar depois que o navegador calcular o layout.
-  requestAnimationFrame(ajustarCanvas);
+  // Ajustar após o navegador calcular o layout.
+  requestAnimationFrame(function () {
+    ajustarCanvas();
+  });
 
-  // Ajustar novamente em mudanças de tamanho e orientação.
+
+  // Reajustar quando a janela mudar de tamanho.
   window.addEventListener("resize", function () {
-    requestAnimationFrame(ajustarCanvas);
+
+    requestAnimationFrame(function () {
+      ajustarCanvas();
+    });
+
   });
 
 
   // ===========================================================
-  // 7. MENSAGENS
+  // 7. MENSAGENS DO FORMULÁRIO
   // ===========================================================
 
   function mostrarMensagem(texto, tipo) {
@@ -146,6 +186,7 @@ document.addEventListener("DOMContentLoaded", function () {
     campoMensagem.className = tipo;
 
   }
+
 
   function limparMensagem() {
 
@@ -194,7 +235,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     evento.preventDefault();
 
-    if (botaoEnviar.disabled) return;
+    if (botaoEnviar.disabled) {
+      return;
+    }
 
     limparMensagem();
 
@@ -289,7 +332,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     } catch (erro) {
 
-      console.error("Erro ao gerar assinatura:", erro);
+      console.error(
+        "Erro ao gerar imagem da assinatura:",
+        erro
+      );
 
       mostrarMensagem(
         "❌ Não foi possível preparar a assinatura.",
@@ -349,7 +395,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // ---------------------------------------------------------
-    // BLOQUEAR BOTÃO
+    // BLOQUEAR BOTÃO DURANTE O ENVIO
     // ---------------------------------------------------------
 
     const textoOriginal = botaoEnviar.textContent;
@@ -379,7 +425,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
       // -------------------------------------------------------
-      // LER RESPOSTA DO SERVIDOR
+      // VERIFICAR RESPOSTA HTTP
       // -------------------------------------------------------
 
       if (!resposta.ok) {
@@ -390,13 +436,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
       }
 
+
+      // -------------------------------------------------------
+      // LER RESPOSTA DO SERVIDOR
+      // -------------------------------------------------------
+
       const resultado = await resposta.json();
 
-      console.log("Resposta do Apps Script:", resultado);
+      console.log(
+        "Resposta do Apps Script:",
+        resultado
+      );
 
 
       // -------------------------------------------------------
-      // CONFIRMAR SUCESSO
+      // CONFIRMAR RESULTADO
       // -------------------------------------------------------
 
       if (resultado.status === "ok") {
@@ -429,7 +483,7 @@ document.addEventListener("DOMContentLoaded", function () {
     } catch (erro) {
 
       // -------------------------------------------------------
-      // TRATAR ERROS
+      // TRATAR ERROS DE ENVIO
       // -------------------------------------------------------
 
       console.error(
@@ -457,5 +511,26 @@ document.addEventListener("DOMContentLoaded", function () {
 
   });
 
-});
-```
+
+  console.log("Formulário inicializado com sucesso.");
+
+}
+
+
+// =============================================================
+// 12. EXECUTAR INICIALIZAÇÃO
+// =============================================================
+
+if (document.readyState === "loading") {
+
+  document.addEventListener(
+    "DOMContentLoaded",
+    iniciarFormulario,
+    { once: true }
+  );
+
+} else {
+
+  iniciarFormulario();
+
+}
