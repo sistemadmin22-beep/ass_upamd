@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -5,26 +6,303 @@
 
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Assinatura RH</title>
+    <title>Assinatura RH - UPA Madureira</title>
 
-    <link rel="stylesheet" href="style.css">
+    <style>
+
+        /* CONFIGURAÇÃO GERAL */
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            font-family: Arial, Helvetica, sans-serif;
+
+            background-color: #edf3f8;
+        }
+
+
+        /* CARTÃO PRINCIPAL */
+
+        .container {
+            width: 100%;
+            max-width: 430px;
+
+            padding: 20px 18px 15px;
+
+            background-color: #ffffff;
+
+            border-radius: 12px;
+
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+        }
+
+
+        /* LOGOTIPO */
+
+        .logo {
+            display: block;
+
+            width: 150px;
+            max-width: 100%;
+            height: 65px;
+
+            object-fit: contain;
+
+            margin: 0 auto 12px;
+        }
+
+
+        /* TÍTULO */
+
+        h2 {
+            margin: 8px 0 6px;
+
+            text-align: center;
+
+            font-size: 19px;
+            font-weight: bold;
+
+            color: #333333;
+        }
+
+
+        /* DESCRIÇÃO */
+
+        .descricao {
+            margin: 0 0 16px;
+
+            text-align: center;
+
+            font-size: 13px;
+
+            color: #666666;
+        }
+
+
+        /* RÓTULOS */
+
+        label {
+            display: block;
+
+            margin-bottom: 6px;
+
+            font-size: 14px;
+            font-weight: bold;
+
+            color: #111111;
+        }
+
+
+        /* CAMPOS DE PREENCHIMENTO */
+
+        input[type="text"],
+        select {
+
+            display: block;
+
+            width: 100%;
+            height: 39px;
+
+            margin-bottom: 17px;
+
+            padding: 8px 12px;
+
+            border: 1px solid #cccccc;
+
+            border-radius: 8px;
+
+            background-color: #ffffff;
+
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 14px;
+
+            color: #555555;
+
+            outline: none;
+        }
+
+
+        input[type="text"]:focus,
+        select:focus {
+
+            border-color: #1264a3;
+
+            box-shadow: 0 0 3px rgba(18, 100, 163, 0.25);
+        }
+
+
+        /* ÁREA DE ASSINATURA */
+
+        #assinatura {
+
+            display: block;
+
+            width: 100%;
+            height: 128px;
+
+            margin-bottom: 10px;
+
+            border: 2px solid #bdbdbd;
+
+            border-radius: 9px;
+
+            background-color: #ffffff;
+
+            touch-action: none;
+        }
+
+
+        /* DECLARAÇÃO */
+
+        .declaracao {
+
+            display: flex;
+            align-items: flex-start;
+
+            gap: 8px;
+
+            width: 100%;
+
+            padding: 10px;
+
+            margin-top: 10px;
+            margin-bottom: 10px;
+
+            background-color: #f4f7fa;
+
+            border: 1px solid #d7e0e9;
+
+            border-radius: 8px;
+        }
+
+
+        .declaracao input[type="checkbox"] {
+
+            flex-shrink: 0;
+
+            margin: 2px 0 0;
+
+            cursor: pointer;
+        }
+
+
+        .declaracao label {
+
+            margin: 0;
+
+            font-size: 11px;
+            font-weight: normal;
+
+            line-height: 1.4;
+
+            color: #444444;
+
+            cursor: pointer;
+        }
+
+
+        /* MENSAGENS */
+
+        #mensagem {
+
+            margin: 8px 0;
+
+            text-align: center;
+
+            font-size: 13px;
+        }
+
+
+        /* BOTÕES */
+
+        .botoes {
+
+            display: flex;
+
+            gap: 10px;
+
+            width: 100%;
+
+            margin-top: 10px;
+        }
+
+
+        .botoes button {
+
+            flex: 1;
+
+            height: 40px;
+
+            border: none;
+
+            border-radius: 7px;
+
+            background-color: #1264a3;
+
+            color: #ffffff;
+
+            font-size: 14px;
+
+            cursor: pointer;
+
+            transition: background-color 0.2s;
+        }
+
+
+        .botoes button:hover {
+
+            background-color: #084d83;
+        }
+
+
+        .botoes button:active {
+
+            transform: scale(0.98);
+        }
+
+
+        /* RESPONSIVIDADE */
+
+        @media (max-width: 480px) {
+
+            body {
+                padding: 12px;
+                align-items: center;
+            }
+
+            .container {
+                padding: 18px 15px 15px;
+            }
+
+        }
+
+    </style>
 
 </head>
+
 
 <body>
 
     <div class="container">
 
-        <!-- LOGO -->
+
+        <!-- LOGOTIPO UPA MADUREIRA -->
 
         <img
             src="logo.png"
-            alt="Logo UPA Del Castilho"
+            alt="Logo UPA Madureira"
             class="logo"
         >
 
@@ -68,11 +346,7 @@
             required
         >
 
-            <option
-                value=""
-                selected
-                disabled
-            >
+            <option value="" selected disabled>
                 Selecione o tipo de documento
             </option>
 
@@ -137,6 +411,7 @@
 
         </div>
 
+
     </div>
 
 
@@ -148,6 +423,7 @@
     <!-- JAVASCRIPT DO SISTEMA -->
 
     <script src="script.js"></script>
+
 
 </body>
 
