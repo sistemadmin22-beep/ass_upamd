@@ -1,401 +1,139 @@
 
-// ========================================
-// CONFIGURAÇÃO
-// ========================================
+const URL_SCRIPT =
+  "https://script.google.com/macros/s/AKfycbwN9ribuxf9mMdhvU5NPi1aeuQVti3F8lwXOzQaUR_sfvIWvX7aGbFNipk6_cjzm9SbSQ/exec";
 
-// URL DO GOOGLE APPS SCRIPT
-// IMPORTANTE: utilizar a URL da implantação
-// vinculada à planilha da UPA MADUREIRA.
+document.addEventListener("DOMContentLoaded", function () {
+  const campoMatricula = document.getElementById("matricula");
+  const campoDocumento = document.getElementById("tipoDocumento");
+  const canvas = document.getElementById("assinatura");
+  const aceite = document.getElementById("aceite");
+  const botaoLimpar = document.getElementById("limpar");
+  const botaoEnviar = document.getElementById("enviar");
 
-const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbwN9ribuxf9mMdhvU5NPi1aeuQVti3F8lwXOzQaUR_sfvIWvX7aGbFNipk6_cjzm9SbSQ/exec";
+  if (
+    !campoMatricula ||
+    !campoDocumento ||
+    !canvas ||
+    !aceite ||
+    !botaoLimpar ||
+    !botaoEnviar
+  ) {
+    console.error("Um ou mais elementos do formulário não foram encontrados.");
+    alert("Erro ao carregar o formulário. Atualize a página.");
+    return;
+  }
 
+  if (typeof SignaturePad === "undefined") {
+    alert("Não foi possível carregar o campo de assinatura.");
+    return;
+  }
 
-// ========================================
-// ELEMENTOS DO HTML
-// ========================================
-
-const canvas = document.getElementById("assinatura");
-
-const campoMatricula = document.getElementById("matricula");
-
-const campoDocumento = document.getElementById("tipoDocumento");
-
-const campoAceite = document.getElementById("aceite");
-
-const mensagem = document.getElementById("mensagem");
-
-const botaoLimpar = document.getElementById("limpar");
-
-const botaoEnviar = document.getElementById("enviar");
-
-
-// ========================================
-// CONFIGURAÇÃO DA ASSINATURA
-// ========================================
-
-const signaturePad = new SignaturePad(canvas, {
-
+  const assinaturaPad = new SignaturePad(canvas, {
     minWidth: 1,
-
     maxWidth: 2.5,
+    penColor: "black"
+  });
 
-    penColor: "#000000"
-
-});
-
-
-// ========================================
-// AJUSTAR CANVAS
-// ========================================
-
-function ajustarCanvas() {
-
-    const ratio = Math.max(window.devicePixelRatio || 1, 1);
-
+  function ajustarCanvas() {
+    const proporcao = Math.max(window.devicePixelRatio || 1, 1);
     const largura = canvas.offsetWidth;
-
     const altura = canvas.offsetHeight;
 
-    if (!largura || !altura) {
-        return;
-    }
+    if (!largura || !altura) return;
 
-    // Evita redimensionamento desnecessário
+    const imagemAnterior = assinaturaPad.isEmpty()
+      ? null
+      : assinaturaPad.toData();
 
-    const novaLargura = Math.round(largura * ratio);
-
-    const novaAltura = Math.round(altura * ratio);
-
-    if (
-        canvas.width === novaLargura &&
-        canvas.height === novaAltura
-    ) {
-        return;
-    }
-
-    // Preservar assinatura existente
-
-    const dadosAssinatura = signaturePad.toData();
-
-    // Ajustar resolução do Canvas
-
-    canvas.width = novaLargura;
-
-    canvas.height = novaAltura;
+    canvas.width = largura * proporcao;
+    canvas.height = altura * proporcao;
 
     const contexto = canvas.getContext("2d");
+    contexto.setTransform(proporcao, 0, 0, proporcao, 0, 0);
 
-    contexto.setTransform(
-        ratio,
-        0,
-        0,
-        ratio,
-        0,
-        0
-    );
+    assinaturaPad.clear();
 
-    // Restaurar assinatura
-
-    signaturePad.clear();
-
-    if (dadosAssinatura.length > 0) {
-
-        signaturePad.fromData(dadosAssinatura);
-
+    if (imagemAnterior) {
+      assinaturaPad.fromData(imagemAnterior);
     }
+  }
 
-}
+  ajustarCanvas();
+  window.addEventListener("resize", ajustarCanvas);
 
+  botaoLimpar.addEventListener("click", function () {
+    assinaturaPad.clear();
+  });
 
-// Ajuste inicial
-
-ajustarCanvas();
-
-
-// Ajustar quando a tela mudar de tamanho
-
-window.addEventListener("resize", ajustarCanvas);
-
-
-// ========================================
-// MENSAGENS
-// ========================================
-
-function mostrarMensagem(texto, tipo) {
-
-    mensagem.textContent = texto;
-
-    mensagem.className = tipo;
-
-}
-
-
-function limparMensagem() {
-
-    mensagem.textContent = "";
-
-    mensagem.className = "";
-
-}
-
-
-// ========================================
-// LIMPAR FORMULÁRIO
-// ========================================
-
-function limparFormulario() {
-
-    campoMatricula.value = "";
-
-    campoDocumento.value = "";
-
-    campoAceite.checked = false;
-
-    signaturePad.clear();
-
-}
-
-
-// ========================================
-// BOTÃO LIMPAR
-// ========================================
-
-botaoLimpar.addEventListener("click", () => {
-
-    limparFormulario();
-
-    limparMensagem();
-
-});
-
-
-// ========================================
-// BOTÃO ENVIAR
-// ========================================
-
-botaoEnviar.addEventListener("click", async () => {
-
-    // Evitar cliques repetidos
-
-    if (botaoEnviar.disabled) {
-        return;
-    }
-
-    limparMensagem();
-
-
-    // ====================================
-    // CAPTURAR DADOS
-    // ====================================
-
+  botaoEnviar.addEventListener("click", async function () {
     const matricula = campoMatricula.value.trim();
-
     const tipoDocumento = campoDocumento.value;
 
-    const aceite = campoAceite.checked;
-
-
-    // ====================================
-    // VALIDAR MATRÍCULA
-    // ====================================
-
-    if (matricula === "") {
-
-        mostrarMensagem(
-            "⚠️ Informe sua matrícula.",
-            "erro"
-        );
-
-        campoMatricula.focus();
-
-        return;
-
+    if (!matricula) {
+      alert("Informe sua matrícula.");
+      campoMatricula.focus();
+      return;
     }
 
-
-    // ====================================
-    // VALIDAR DOCUMENTO
-    // ====================================
-
-    if (tipoDocumento === "") {
-
-        mostrarMensagem(
-            "⚠️ Selecione o tipo de documento.",
-            "erro"
-        );
-
-        campoDocumento.focus();
-
-        return;
-
+    if (!tipoDocumento) {
+      alert("Selecione o tipo de documento.");
+      campoDocumento.focus();
+      return;
     }
 
-
-    // ====================================
-    // VALIDAR ASSINATURA
-    // ====================================
-
-    if (signaturePad.isEmpty()) {
-
-        mostrarMensagem(
-            "⚠️ Faça sua assinatura antes de enviar.",
-            "erro"
-        );
-
-        return;
-
+    if (assinaturaPad.isEmpty()) {
+      alert("Faça sua assinatura antes de enviar.");
+      return;
     }
 
-
-    // ====================================
-    // VALIDAR DECLARAÇÃO
-    // ====================================
-
-    if (!aceite) {
-
-        mostrarMensagem(
-            "⚠️ Você precisa confirmar a declaração.",
-            "erro"
-        );
-
-        campoAceite.focus();
-
-        return;
-
+    if (!aceite.checked) {
+      alert("É necessário confirmar o aceite.");
+      aceite.focus();
+      return;
     }
-
-
-    // ====================================
-    // CAPTURAR ASSINATURA
-    // ====================================
-
-    const assinatura = signaturePad.toDataURL("image/png");
-
-
-    // ====================================
-    // PREPARAR DADOS
-    // ====================================
 
     const dados = {
-
-        matricula: matricula,
-
-        tipoDocumento: tipoDocumento,
-
-        assinatura: assinatura
-
+      matricula: matricula,
+      tipoDocumento: tipoDocumento,
+      assinatura: assinaturaPad.toDataURL("image/png")
     };
 
-
-    // ====================================
-    // BLOQUEAR BOTÃO DURANTE O ENVIO
-    // ====================================
-
     botaoEnviar.disabled = true;
-
+    const textoOriginal = botaoEnviar.textContent;
     botaoEnviar.textContent = "Enviando...";
 
-
-    // ====================================
-    // ENVIAR PARA GOOGLE APPS SCRIPT
-    // ====================================
-
     try {
+      /*
+       * O formulário está no GitHub e o Apps Script está em outro domínio.
+       * no-cors evita o bloqueio de leitura da resposta pelo navegador.
+       * O Content-Type text/plain evita uma requisição preflight.
+       */
+      await fetch(URL_SCRIPT, {
+        method: "POST",
+        mode: "no-cors",
+        headers: {
+          "Content-Type": "text/plain;charset=UTF-8"
+        },
+        body: JSON.stringify(dados)
+      });
 
-        const resposta = await fetch(URL_SCRIPT, {
-
-            method: "POST",
-
-            headers: {
-                "Content-Type": "text/plain;charset=utf-8"
-            },
-
-            body: JSON.stringify(dados)
-
-        });
-
-
-        // Verificar resposta HTTP
-
-        if (!resposta.ok) {
-
-            throw new Error(
-                "Erro HTTP: " + resposta.status
-            );
-
-        }
-
-
-        // ====================================
-        // INTERPRETAR RESPOSTA DO SERVIDOR
-        // ====================================
-
-        const textoResposta = await resposta.text();
-
-        let resultado;
-
-        try {
-
-            resultado = JSON.parse(textoResposta);
-
-        } catch (erro) {
-
-            throw new Error(
-                "O servidor não retornou uma resposta JSON válida."
-            );
-
-        }
-
-
-        // ====================================
-        // CONFIRMAR SUCESSO
-        // ====================================
-
-        if (resultado.status === "ok") {
-
-            mostrarMensagem(
-                "✅ Assinatura enviada com sucesso!",
-                "sucesso"
-            );
-
-            // Limpar os campos após confirmação
-
-            limparFormulario();
-
-
-        } else {
-
-            mostrarMensagem(
-                resultado.mensagem ||
-                "❌ Não foi possível registrar a assinatura.",
-                "erro"
-            );
-
-        }
-
+      alert(
+        "Solicitação de envio realizada. " +
+        "Como o navegador não permite ler a resposta do Google neste modo, " +
+        "confirme o registro na planilha antes de fechar a página."
+      );
 
     } catch (erro) {
+      console.error("Falha no envio:", erro);
 
-        console.error(
-            "Erro ao enviar assinatura:",
-            erro
-        );
-
-        mostrarMensagem(
-            "❌ Erro ao conectar com o servidor. Tente novamente.",
-            "erro"
-        );
-
+      alert(
+        "Não foi possível realizar o envio. " +
+        "Verifique sua conexão e tente novamente."
+      );
 
     } finally {
-
-        // Liberar botão novamente
-
-        botaoEnviar.disabled = false;
-
-        botaoEnviar.textContent = "Enviar";
-
+      botaoEnviar.disabled = false;
+      botaoEnviar.textContent = textoOriginal;
     }
-
+  });
 });
-
