@@ -1,10 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <meta name="theme-color" content="#edf3f8">
 
     <title>Assinatura RH - UPA Madureira</title>
@@ -14,11 +14,19 @@
             box-sizing: border-box;
         }
 
+        html,
         body {
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            width: 100%;
+            min-height: 100%;
+        }
+
+        body {
             min-height: 100vh;
             min-height: 100dvh;
+
+            padding: 20px;
 
             display: flex;
             justify-content: center;
@@ -31,6 +39,7 @@
         .container {
             width: 100%;
             max-width: 430px;
+
             padding: 20px 18px 15px;
 
             background-color: #ffffff;
@@ -40,6 +49,7 @@
 
         .logo {
             display: block;
+
             width: 150px;
             max-width: 100%;
             height: 65px;
@@ -50,6 +60,7 @@
 
         h2 {
             margin: 8px 0 6px;
+
             text-align: center;
             font-size: 19px;
             font-weight: bold;
@@ -58,6 +69,7 @@
 
         .descricao {
             margin: 0 0 16px;
+
             text-align: center;
             font-size: 13px;
             color: #666666;
@@ -65,7 +77,9 @@
 
         label {
             display: block;
+
             margin-bottom: 6px;
+
             font-size: 14px;
             font-weight: bold;
             color: #111111;
@@ -74,6 +88,7 @@
         input[type="text"],
         select {
             display: block;
+
             width: 100%;
             height: 39px;
 
@@ -88,6 +103,7 @@
             font-family: Arial, Helvetica, sans-serif;
             font-size: 14px;
             color: #555555;
+
             outline: none;
         }
 
@@ -101,17 +117,23 @@
 
         #assinatura {
             display: block;
+
             width: 100%;
             height: 155px;
 
-            margin-bottom: 10px;
+            margin: 0 0 10px;
+            padding: 0;
 
             border: 2px solid #bdbdbd;
             border-radius: 9px;
 
             background-color: #ffffff;
+
             touch-action: none;
+            cursor: crosshair;
         }
+
+        /* DECLARAÇÃO */
 
         .declaracao {
             display: flex;
@@ -119,46 +141,75 @@
             gap: 8px;
 
             width: 100%;
+
             padding: 10px;
             margin-top: 10px;
             margin-bottom: 10px;
 
             background-color: #f4f7fa;
+
             border: 1px solid #d7e0e9;
             border-radius: 8px;
         }
 
         .declaracao input[type="checkbox"] {
             flex-shrink: 0;
+
             margin: 2px 0 0;
+
             cursor: pointer;
         }
 
         .declaracao label {
             margin: 0;
+
             font-size: 11px;
             font-weight: normal;
             line-height: 1.4;
+
             color: #444444;
             cursor: pointer;
         }
 
+        /* MENSAGENS */
+
         #mensagem {
             margin: 8px 0;
+
             text-align: center;
             font-size: 13px;
             line-height: 1.4;
         }
 
+        #mensagem:empty {
+            display: none;
+        }
+
+        #mensagem.erro {
+            color: #c62828;
+        }
+
+        #mensagem.sucesso {
+            color: #237a39;
+        }
+
+        #mensagem.normal {
+            color: #1264a3;
+        }
+
+        /* BOTÕES */
+
         .botoes {
             display: flex;
             gap: 10px;
+
             width: 100%;
             margin-top: 10px;
         }
 
         .botoes button {
             flex: 1;
+
             height: 40px;
 
             border: none;
@@ -169,6 +220,7 @@
 
             font-size: 14px;
             cursor: pointer;
+
             transition: background-color 0.2s;
         }
 
@@ -196,11 +248,15 @@
             text-align: center;
             font-size: 10px;
             color: #a0a8b0;
+
             letter-spacing: 0.2px;
             font-weight: normal;
         }
 
+        /* TELAS MENORES */
+
         @media (max-width: 480px) {
+
             body {
                 padding: 12px;
                 align-items: flex-start;
@@ -209,8 +265,20 @@
             .container {
                 padding: 18px 15px 15px;
             }
+
         }
+
     </style>
+
+    <!-- Biblioteca SignaturePad -->
+    <script
+        defer
+        src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js">
+    </script>
+
+    <!-- JavaScript do formulário -->
+    <script defer src="script.js?v=2"></script>
+
 </head>
 
 <body>
@@ -229,7 +297,12 @@
             Assine para validar as informações enviadas
         </p>
 
-        <label for="matricula">Matrícula</label>
+
+        <!-- MATRÍCULA -->
+
+        <label for="matricula">
+            Matrícula
+        </label>
 
         <input
             type="text"
@@ -240,9 +313,15 @@
             required
         >
 
-        <label for="tipoDocumento">Tipo de Documento</label>
+
+        <!-- TIPO DE DOCUMENTO -->
+
+        <label for="tipoDocumento">
+            Tipo de Documento
+        </label>
 
         <select id="tipoDocumento" required>
+
             <option value="" selected disabled>
                 Selecione o tipo de documento
             </option>
@@ -254,14 +333,23 @@
             <option value="Solicitação de Transporte">
                 Solicitação de Transporte
             </option>
+
         </select>
 
-        <label for="assinatura">Assine abaixo</label>
+
+        <!-- ASSINATURA -->
+
+        <label for="assinatura">
+            Assine abaixo
+        </label>
 
         <canvas
             id="assinatura"
             aria-label="Campo para desenhar sua assinatura"
         ></canvas>
+
+
+        <!-- DECLARAÇÃO -->
 
         <div class="declaracao">
 
@@ -277,11 +365,17 @@
 
         </div>
 
+
+        <!-- MENSAGEM -->
+
         <div
             id="mensagem"
             role="status"
             aria-live="polite"
         ></div>
+
+
+        <!-- BOTÕES -->
 
         <div class="botoes">
 
@@ -295,17 +389,14 @@
 
         </div>
 
+
+        <!-- RODAPÉ -->
+
         <footer class="rodape">
             Desenvolvido por Mariana Alves - Mat.: 40/4.057.919-3
         </footer>
 
     </main>
-
-    <!-- Biblioteca de assinatura -->
-    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
-
-    <!-- JavaScript do sistema -->
-    <script src="script.js"></script>
 
 </body>
 </html>
