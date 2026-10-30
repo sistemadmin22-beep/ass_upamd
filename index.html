@@ -6,12 +6,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <meta name="theme-color" content="#edf3f8">
+
     <title>Assinatura RH - UPA Madureira</title>
 
     <style>
-
-        /* CONFIGURAÇÃO GERAL */
-
         * {
             box-sizing: border-box;
         }
@@ -20,6 +19,7 @@
             margin: 0;
             padding: 20px;
             min-height: 100vh;
+            min-height: 100dvh;
 
             display: flex;
             justify-content: center;
@@ -29,77 +29,52 @@
             background-color: #edf3f8;
         }
 
-        /* CARTÃO PRINCIPAL */
-
         .container {
             width: 100%;
             max-width: 430px;
-
             padding: 20px 18px 15px;
 
             background-color: #ffffff;
             border-radius: 12px;
-
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
         }
 
-        /* LOGOTIPO */
-
         .logo {
             display: block;
-
             width: 150px;
             max-width: 100%;
             height: 65px;
 
             object-fit: contain;
-
             margin: 0 auto 12px;
         }
 
-        /* TÍTULO */
-
         h2 {
             margin: 8px 0 6px;
-
             text-align: center;
-
             font-size: 19px;
             font-weight: bold;
-
             color: #333333;
         }
 
-        /* DESCRIÇÃO */
-
         .descricao {
             margin: 0 0 16px;
-
             text-align: center;
-
             font-size: 13px;
             color: #666666;
         }
 
-        /* RÓTULOS */
-
         label {
             display: block;
-
             margin-bottom: 6px;
-
             font-size: 14px;
             font-weight: bold;
-
             color: #111111;
         }
-
-        /* CAMPOS DE PREENCHIMENTO */
 
         input[type="text"],
         select {
             display: block;
-
             width: 100%;
             height: 39px;
 
@@ -113,7 +88,6 @@
 
             font-family: Arial, Helvetica, sans-serif;
             font-size: 14px;
-
             color: #555555;
             outline: none;
         }
@@ -121,15 +95,11 @@
         input[type="text"]:focus,
         select:focus {
             border-color: #1264a3;
-
             box-shadow: 0 0 3px rgba(18, 100, 163, 0.25);
         }
 
-        /* ÁREA DE ASSINATURA */
-
         #assinatura {
             display: block;
-
             width: 100%;
             height: 128px;
 
@@ -139,89 +109,65 @@
             border-radius: 9px;
 
             background-color: #ffffff;
-
             touch-action: none;
         }
-
-        /* DECLARAÇÃO */
 
         .declaracao {
             display: flex;
             align-items: flex-start;
-
             gap: 8px;
 
             width: 100%;
-
             padding: 10px;
             margin-top: 10px;
             margin-bottom: 10px;
 
             background-color: #f4f7fa;
-
             border: 1px solid #d7e0e9;
             border-radius: 8px;
         }
 
         .declaracao input[type="checkbox"] {
             flex-shrink: 0;
-
             margin: 2px 0 0;
-
             cursor: pointer;
         }
 
         .declaracao label {
             margin: 0;
-
             font-size: 11px;
             font-weight: normal;
-
             line-height: 1.4;
-
             color: #444444;
-
             cursor: pointer;
         }
 
-        /* MENSAGENS */
-
         #mensagem {
             margin: 8px 0;
-
             text-align: center;
-
             font-size: 13px;
+            line-height: 1.4;
         }
-
-        /* BOTÕES */
 
         .botoes {
             display: flex;
-
             gap: 10px;
-
             width: 100%;
-
             margin-top: 10px;
         }
 
         .botoes button {
             flex: 1;
-
             height: 40px;
 
             border: none;
             border-radius: 7px;
 
             background-color: #1264a3;
-
             color: #ffffff;
 
             font-size: 14px;
-
             cursor: pointer;
-
             transition: background-color 0.2s;
         }
 
@@ -238,30 +184,22 @@
             cursor: not-allowed;
         }
 
-        /* RESPONSIVIDADE */
-
         @media (max-width: 480px) {
-
             body {
                 padding: 12px;
-                align-items: center;
+                align-items: flex-start;
             }
 
             .container {
                 padding: 18px 15px 15px;
             }
-
         }
-
     </style>
-
 </head>
 
 <body>
 
     <main class="container">
-
-        <!-- LOGOTIPO UPA MADUREIRA -->
 
         <img
             src="logo.png"
@@ -269,42 +207,26 @@
             class="logo"
         >
 
-        <!-- TÍTULO -->
-
-        <h2>
-            Assinatura Digital
-        </h2>
-
-        <!-- DESCRIÇÃO -->
+        <h2>Assinatura Digital</h2>
 
         <p class="descricao">
             Assine para validar as informações enviadas
         </p>
 
-        <!-- MATRÍCULA -->
-
-        <label for="matricula">
-            Matrícula
-        </label>
+        <label for="matricula">Matrícula</label>
 
         <input
             type="text"
             id="matricula"
             placeholder="Digite sua matrícula"
             autocomplete="off"
-        >
-
-        <!-- TIPO DE DOCUMENTO -->
-
-        <label for="tipoDocumento">
-            Tipo de Documento
-        </label>
-
-        <select
-            id="tipoDocumento"
+            maxlength="30"
             required
         >
 
+        <label for="tipoDocumento">Tipo de Documento</label>
+
+        <select id="tipoDocumento" required>
             <option value="" selected disabled>
                 Selecione o tipo de documento
             </option>
@@ -316,24 +238,21 @@
             <option value="Solicitação de Transporte">
                 Solicitação de Transporte
             </option>
-
         </select>
 
-        <!-- ASSINATURA -->
+        <label for="assinatura">Assine abaixo</label>
 
-        <label for="assinatura">
-            Assine abaixo
-        </label>
-
-        <canvas id="assinatura"></canvas>
-
-        <!-- DECLARAÇÃO -->
+        <canvas
+            id="assinatura"
+            aria-label="Campo para desenhar sua assinatura"
+        ></canvas>
 
         <div class="declaracao">
 
             <input
                 type="checkbox"
                 id="aceite"
+                required
             >
 
             <label for="aceite">
@@ -342,29 +261,19 @@
 
         </div>
 
-        <!-- MENSAGEM -->
-
         <div
             id="mensagem"
             role="status"
             aria-live="polite"
         ></div>
 
-        <!-- BOTÕES -->
-
         <div class="botoes">
 
-            <button
-                id="limpar"
-                type="button"
-            >
+            <button id="limpar" type="button">
                 Limpar
             </button>
 
-            <button
-                id="enviar"
-                type="button"
-            >
+            <button id="enviar" type="button">
                 Enviar
             </button>
 
@@ -372,14 +281,11 @@
 
     </main>
 
-    <!-- 1º: BIBLIOTECA DE ASSINATURA -->
-
+    <!-- Biblioteca de assinatura -->
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
 
-    <!-- 2º: JAVASCRIPT DO SISTEMA -->
-
+    <!-- JavaScript do sistema -->
     <script src="script.js"></script>
 
 </body>
-
 </html>
