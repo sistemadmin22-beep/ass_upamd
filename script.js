@@ -5,17 +5,12 @@
  ***************************************************************/
 
 
-/***************************************************************
- * 1. ENDEREÇO DA IMPLANTAÇÃO DO APPS SCRIPT
- ***************************************************************/
+// =============================================================
+// 1. CONFIGURAÇÃO
+// =============================================================
 
 const URL_SCRIPT =
   "https://script.google.com/macros/s/AKfycbwN9ribuxf9mMdhvU5NPi1aeuQVti3F8lwXOzQaUR_sfvIWvX7aGbFNipk6_cjzm9SbSQ/exec";
-
-
-/***************************************************************
- * 2. CONFIGURAÇÕES
- ***************************************************************/
 
 const DOCUMENTOS_PERMITIDOS = [
   "Plantão Extra",
@@ -25,9 +20,9 @@ const DOCUMENTOS_PERMITIDOS = [
 const TAMANHO_MAXIMO_BYTES = 5 * 1024 * 1024;
 
 
-/***************************************************************
- * 3. INICIALIZAÇÃO DO FORMULÁRIO
- ***************************************************************/
+// =============================================================
+// 2. INICIALIZAÇÃO
+// =============================================================
 
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -40,9 +35,9 @@ document.addEventListener("DOMContentLoaded", function () {
   const campoMensagem = document.getElementById("mensagem");
 
 
-  /*************************************************************
-   * 4. VERIFICAR ELEMENTOS DO FORMULÁRIO
-   *************************************************************/
+  // ===========================================================
+  // 3. VERIFICAR ELEMENTOS
+  // ===========================================================
 
   if (
     !campoMatricula ||
@@ -50,58 +45,44 @@ document.addEventListener("DOMContentLoaded", function () {
     !canvas ||
     !aceite ||
     !botaoLimpar ||
-    !botaoEnviar
+    !botaoEnviar ||
+    !campoMensagem
   ) {
-
-    console.error(
-      "Um ou mais elementos do formulário não foram encontrados."
-    );
-
+    console.error("Elementos do formulário não encontrados.");
     alert("Erro ao carregar o formulário. Atualize a página.");
-
     return;
   }
 
 
-  /*************************************************************
-   * 5. VERIFICAR BIBLIOTECA DE ASSINATURA
-   *************************************************************/
+  // ===========================================================
+  // 4. VERIFICAR SIGNATURE PAD
+  // ===========================================================
 
   if (typeof SignaturePad === "undefined") {
-
     console.error("Biblioteca SignaturePad não carregada.");
-
-    alert(
-      "Não foi possível carregar o campo de assinatura. " +
-      "Atualize a página e tente novamente."
-    );
-
+    alert("Não foi possível carregar o campo de assinatura.");
     return;
   }
 
 
-  /*************************************************************
-   * 6. CONFIGURAR CAMPO DE ASSINATURA
-   *************************************************************/
+  // ===========================================================
+  // 5. CONFIGURAR ASSINATURA
+  // ===========================================================
 
   const assinaturaPad = new SignaturePad(canvas, {
-
     minWidth: 1,
-
     maxWidth: 2.5,
-
-    penColor: "black"
-
+    penColor: "#000000"
   });
 
 
-  /*************************************************************
-   * 7. AJUSTAR CANVAS PARA COMPUTADORES E CELULARES
-   *************************************************************/
+  // ===========================================================
+  // 6. AJUSTAR CANVAS
+  // ===========================================================
 
   function ajustarCanvas() {
 
-    const proporcao = Math.max(
+    const ratio = Math.max(
       window.devicePixelRatio || 1,
       1
     );
@@ -111,198 +92,148 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (!largura || !altura) return;
 
-    // Preservar assinatura existente.
+    // Preservar o desenho durante o redimensionamento.
 
-    const imagemAnterior = assinaturaPad.isEmpty()
+    const dadosAnteriores = assinaturaPad.isEmpty()
       ? null
       : assinaturaPad.toData();
 
-    // Ajustar resolução do canvas.
-
-    canvas.width = largura * proporcao;
-    canvas.height = altura * proporcao;
+    canvas.width = largura * ratio;
+    canvas.height = altura * ratio;
 
     const contexto = canvas.getContext("2d");
 
-    contexto.setTransform(
-      proporcao,
-      0,
-      0,
-      proporcao,
-      0,
-      0
-    );
-
-    // Restaurar assinatura.
+    contexto.setTransform(ratio, 0, 0, ratio, 0, 0);
 
     assinaturaPad.clear();
 
-    if (imagemAnterior) {
-      assinaturaPad.fromData(imagemAnterior);
+    if (dadosAnteriores) {
+      assinaturaPad.fromData(dadosAnteriores);
     }
   }
-
 
   ajustarCanvas();
 
   window.addEventListener("resize", ajustarCanvas);
 
 
-  /*************************************************************
-   * 8. FUNÇÃO PARA MOSTRAR MENSAGENS
-   *************************************************************/
+  // ===========================================================
+  // 7. MENSAGENS
+  // ===========================================================
 
   function mostrarMensagem(texto, tipo) {
 
-    if (!campoMensagem) {
-      alert(texto);
-      return;
-    }
-
     campoMensagem.textContent = texto;
+    campoMensagem.className = tipo;
 
-    campoMensagem.style.padding = "8px";
+  }
 
-    campoMensagem.style.borderRadius = "7px";
+  function limparMensagem() {
 
-    campoMensagem.style.fontWeight = "bold";
+    campoMensagem.textContent = "";
+    campoMensagem.className = "";
 
-    campoMensagem.style.textAlign = "center";
-
-    if (tipo === "erro") {
-
-      campoMensagem.style.color = "#b00020";
-
-      campoMensagem.style.backgroundColor = "#fdeaea";
-
-      campoMensagem.style.border = "1px solid #f5c2c2";
-
-    } else if (tipo === "sucesso") {
-
-      campoMensagem.style.color = "#176b35";
-
-      campoMensagem.style.backgroundColor = "#e8f7e9";
-
-      campoMensagem.style.border = "1px solid #b7e1b9";
-
-    } else {
-
-      campoMensagem.style.color = "#555555";
-
-      campoMensagem.style.backgroundColor = "#f4f7fa";
-
-      campoMensagem.style.border = "1px solid #d7e0e9";
-
-    }
   }
 
 
-  /*************************************************************
-   * 9. FUNÇÃO PARA LIMPAR O FORMULÁRIO
-   *************************************************************/
+  // ===========================================================
+  // 8. LIMPAR FORMULÁRIO
+  // ===========================================================
 
   function limparFormulario() {
 
     campoMatricula.value = "";
-
-    campoDocumento.selectedIndex = 0;
-
-    assinaturaPad.clear();
-
+    campoDocumento.value = "";
     aceite.checked = false;
+    assinaturaPad.clear();
 
   }
 
 
-  /*************************************************************
-   * 10. BOTÃO LIMPAR
-   *************************************************************/
+  // ===========================================================
+  // 9. BOTÃO LIMPAR
+  // ===========================================================
 
   botaoLimpar.addEventListener("click", function (evento) {
 
     evento.preventDefault();
 
     limparFormulario();
-
-    if (campoMensagem) {
-
-      campoMensagem.textContent = "";
-
-      campoMensagem.style.backgroundColor = "transparent";
-
-      campoMensagem.style.border = "none";
-
-      campoMensagem.style.padding = "0";
-
-    }
+    limparMensagem();
 
     campoMatricula.focus();
 
   });
 
 
-  /*************************************************************
-   * 11. BOTÃO ENVIAR
-   *************************************************************/
+  // ===========================================================
+  // 10. BOTÃO ENVIAR
+  // ===========================================================
 
   botaoEnviar.addEventListener("click", async function (evento) {
 
     evento.preventDefault();
 
-    // Impedir envios simultâneos.
-
     if (botaoEnviar.disabled) return;
 
+    limparMensagem();
 
-    /***********************************************************
-     * 12. VALIDAR MATRÍCULA
-     ***********************************************************/
+
+    // ---------------------------------------------------------
+    // VALIDAR MATRÍCULA
+    // ---------------------------------------------------------
 
     const matricula = campoMatricula.value.trim();
 
-    if (!matricula) {
+    if (matricula === "") {
 
-      mostrarMensagem("Informe sua matrícula.", "erro");
+      mostrarMensagem(
+        "⚠️ Informe sua matrícula.",
+        "erro"
+      );
 
       campoMatricula.focus();
-
       return;
     }
 
 
-    /***********************************************************
-     * 13. VALIDAR DOCUMENTO
-     ***********************************************************/
+    // ---------------------------------------------------------
+    // VALIDAR DOCUMENTO
+    // ---------------------------------------------------------
 
-    const tipoDocumento = campoDocumento.value.trim();
+    const tipoDocumento = campoDocumento.value;
 
-    if (!tipoDocumento) {
+    if (tipoDocumento === "") {
 
-      mostrarMensagem("Selecione o tipo de documento.", "erro");
+      mostrarMensagem(
+        "⚠️ Selecione o tipo de documento.",
+        "erro"
+      );
 
       campoDocumento.focus();
-
       return;
     }
 
     if (!DOCUMENTOS_PERMITIDOS.includes(tipoDocumento)) {
 
-      mostrarMensagem("Tipo de documento inválido.", "erro");
+      mostrarMensagem(
+        "⚠️ Tipo de documento inválido.",
+        "erro"
+      );
 
       campoDocumento.focus();
-
       return;
     }
 
 
-    /***********************************************************
-     * 14. VALIDAR ASSINATURA
-     ***********************************************************/
+    // ---------------------------------------------------------
+    // VALIDAR ASSINATURA
+    // ---------------------------------------------------------
 
     if (assinaturaPad.isEmpty()) {
 
       mostrarMensagem(
-        "Faça sua assinatura antes de enviar.",
+        "⚠️ Faça sua assinatura antes de enviar.",
         "erro"
       );
 
@@ -310,42 +241,38 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    /***********************************************************
-     * 15. VALIDAR ACEITE
-     ***********************************************************/
+    // ---------------------------------------------------------
+    // VALIDAR ACEITE
+    // ---------------------------------------------------------
 
     if (!aceite.checked) {
 
       mostrarMensagem(
-        "É necessário confirmar o aceite.",
+        "⚠️ Você precisa confirmar a declaração.",
         "erro"
       );
 
       aceite.focus();
-
       return;
     }
 
 
-    /***********************************************************
-     * 16. GERAR IMAGEM PNG
-     ***********************************************************/
+    // ---------------------------------------------------------
+    // GERAR IMAGEM DA ASSINATURA
+    // ---------------------------------------------------------
 
-    let imagemAssinatura;
+    let assinatura;
 
     try {
 
-      imagemAssinatura = assinaturaPad.toDataURL("image/png");
+      assinatura = assinaturaPad.toDataURL("image/png");
 
     } catch (erro) {
 
-      console.error(
-        "Erro ao gerar imagem da assinatura:",
-        erro
-      );
+      console.error("Erro ao gerar assinatura:", erro);
 
       mostrarMensagem(
-        "Não foi possível preparar a assinatura. Tente novamente.",
+        "❌ Não foi possível preparar a assinatura.",
         "erro"
       );
 
@@ -353,23 +280,23 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    /***********************************************************
-     * 17. VERIFICAR TAMANHO DA IMAGEM
-     ***********************************************************/
+    // ---------------------------------------------------------
+    // VALIDAR IMAGEM
+    // ---------------------------------------------------------
 
     const prefixo = "data:image/png;base64,";
 
-    if (!imagemAssinatura.startsWith(prefixo)) {
+    if (!assinatura.startsWith(prefixo)) {
 
       mostrarMensagem(
-        "Não foi possível gerar a imagem da assinatura.",
+        "❌ A imagem da assinatura é inválida.",
         "erro"
       );
 
       return;
     }
 
-    const base64 = imagemAssinatura.substring(prefixo.length);
+    const base64 = assinatura.substring(prefixo.length);
 
     const tamanhoImagem = Math.floor(
       base64.length * 3 / 4
@@ -378,7 +305,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (tamanhoImagem > TAMANHO_MAXIMO_BYTES) {
 
       mostrarMensagem(
-        "A imagem da assinatura ultrapassou o limite de 5 MB.",
+        "❌ A imagem ultrapassou o limite de 5 MB.",
         "erro"
       );
 
@@ -386,9 +313,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    /***********************************************************
-     * 18. PREPARAR DADOS PARA O APPS SCRIPT
-     ***********************************************************/
+    // ---------------------------------------------------------
+    // PREPARAR DADOS
+    // ---------------------------------------------------------
 
     const dados = {
 
@@ -396,105 +323,116 @@ document.addEventListener("DOMContentLoaded", function () {
 
       tipoDocumento: tipoDocumento,
 
-      assinatura: imagemAssinatura
+      assinatura: assinatura
 
     };
 
 
-    /***********************************************************
-     * 19. BLOQUEAR BOTÃO DURANTE O ENVIO
-     ***********************************************************/
+    // ---------------------------------------------------------
+    // BLOQUEAR BOTÃO
+    // ---------------------------------------------------------
 
     const textoOriginal = botaoEnviar.textContent;
 
     botaoEnviar.disabled = true;
-
     botaoEnviar.textContent = "Enviando...";
 
     mostrarMensagem(
-      "Encaminhando assinatura...",
+      "Enviando assinatura...",
       "normal"
     );
 
 
-    /***********************************************************
-     * 20. ENVIAR PARA O GOOGLE APPS SCRIPT
-     ***********************************************************/
+    // =========================================================
+    // 11. ENVIAR AO GOOGLE APPS SCRIPT
+    // =========================================================
 
     try {
 
-      await fetch(URL_SCRIPT, {
+      const resposta = await fetch(URL_SCRIPT, {
 
         method: "POST",
 
-        mode: "no-cors",
-
-        headers: {
-
-          "Content-Type": "text/plain;charset=UTF-8"
-
-        },
-
+        // Mantemos o mesmo padrão utilizado no Del Castilho.
+        // Não definir no-cors nem redirect: manual.
         body: JSON.stringify(dados)
 
       });
 
 
-      /*********************************************************
-       * 21. LIMPAR FORMULÁRIO APÓS O ENVIO
-       *********************************************************/
+      // -------------------------------------------------------
+      // LER RESPOSTA DO SERVIDOR
+      // -------------------------------------------------------
 
-      limparFormulario();
+      if (!resposta.ok) {
 
+        throw new Error(
+          "O servidor respondeu com HTTP " + resposta.status
+        );
 
-      /*********************************************************
-       * 22. EXIBIR MENSAGEM DE SUCESSO
-       *********************************************************/
+      }
 
-      mostrarMensagem(
-        "☑ Assinatura enviada com sucesso!",
-        "sucesso"
-      );
+      const resultado = await resposta.json();
 
-
-      /*********************************************************
-       * 23. DEVOLVER FOCO PARA A MATRÍCULA
-       *********************************************************/
-
-      campoMatricula.focus();
+      console.log("Resposta do Apps Script:", resultado);
 
 
-      console.log(
-        "Solicitação de assinatura encaminhada ao Apps Script."
-      );
+      // -------------------------------------------------------
+      // CONFIRMAR SUCESSO
+      // -------------------------------------------------------
+
+      if (resultado.status === "ok") {
+
+        limparFormulario();
+
+        mostrarMensagem(
+          "☑ Assinatura enviada com sucesso!",
+          "sucesso"
+        );
+
+        campoMatricula.focus();
+
+      } else {
+
+        console.error(
+          "O Apps Script retornou um erro:",
+          resultado
+        );
+
+        mostrarMensagem(
+          resultado.mensagem ||
+          "❌ O servidor não confirmou o recebimento da assinatura.",
+          "erro"
+        );
+
+      }
 
 
     } catch (erro) {
 
-      /*********************************************************
-       * 24. TRATAR FALHA DE COMUNICAÇÃO
-       *********************************************************/
+      // -------------------------------------------------------
+      // TRATAR ERROS
+      // -------------------------------------------------------
 
       console.error(
-        "Falha no envio da assinatura:",
+        "Erro ao enviar assinatura:",
         erro
       );
 
       mostrarMensagem(
-        "Não foi possível encaminhar a assinatura. " +
-        "Verifique sua conexão com a internet e tente novamente.",
+        "❌ Não foi possível confirmar o envio da assinatura. " +
+        "Tente novamente ou entre em contato com o RH.",
         "erro"
       );
 
 
     } finally {
 
-      /*********************************************************
-       * 25. RESTAURAR BOTÃO
-       *********************************************************/
+      // -------------------------------------------------------
+      // RESTAURAR BOTÃO
+      // -------------------------------------------------------
 
       botaoEnviar.disabled = false;
-
       botaoEnviar.textContent = textoOriginal;
 
     }
