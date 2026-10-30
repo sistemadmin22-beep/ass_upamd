@@ -384,16 +384,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
       alert(
 
-        "A solicitação de envio foi encaminhada.\n\n" +
-
-        "Atenção: o navegador não permite confirmar o resultado " +
-        "do processamento neste modo de envio.\n\n" +
-
-        "Verifique se a assinatura foi registrada na planilha " +
-        "(UPA MD) Banco de Assinaturas RH antes de fechar a página."
-
-      );
-
+        "Sua solicitação de assinatura foi enviada! " +
+        "Aguarde a confirmação do registro antes de realizar outro envio."
+);
 
     } catch (erro) {
 
